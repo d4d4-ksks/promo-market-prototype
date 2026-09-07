@@ -65,6 +65,29 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .competitor-row > span:last-child { padding-right: 8px; text-align: right; }
 .competitor-row .ant-tag { justify-self: start; margin-left: 8px; }
 .tier-row { background: #fafafa; font-weight: 500; }
+.filters-drawer .ant-drawer-content { border-radius: 28px 0 0 28px; overflow: hidden; }
+.filters-drawer .ant-drawer-content-wrapper { box-shadow: -6px 0 16px rgba(0,0,0,.08), -9px 0 28px rgba(0,0,0,.05); }
+.filters-drawer .ant-drawer-header { height: 56px; padding: 16px 24px; border-bottom: 1px solid #f0f0f0; }
+.filters-drawer .ant-drawer-title { width: 100%; }
+.filters-title { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 22px; }
+.filters-title .ant-btn { width: 16px; min-width: 16px; height: 22px; padding: 0; color: rgba(0,0,0,.45); }
+.filters-title b { font-weight: 500; }
+.filters-drawer .ant-drawer-body { padding: 16px 24px; overflow-y: auto; }
+.filters-drawer .ant-drawer-footer { padding: 10px 16px; border-top: 1px solid #f0f0f0; }
+.filters-footer { display: flex; justify-content: flex-end; gap: 8px; }
+.filter-list { width: 100%; }
+.filter-item { min-height: 32px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; line-height: 22px; }
+.filter-item > span:first-child { flex: 1; }
+.filter-item > .anticon { margin-left: auto; font-size: 10px; transition: transform .18s ease; }
+.author-filter button { padding: 0; border: 0; color: rgba(0,0,0,.35); background: transparent; font-size: 12px; cursor: pointer; }
+.author-count { display: inline-flex; flex: 0 0 20px !important; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; background: #1890ff; font-size: 12px; font-weight: 400; }
+.pi-filter { display: block; padding: 0 0 12px; }
+.pi-filter:not(.open) { padding-bottom: 0; }
+.filter-item-heading { width: 100%; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0; border: 0; background: transparent; color: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+.filter-item-heading .anticon { font-size: 10px; transition: transform .18s ease; }
+.pi-filter.open .filter-item-heading .anticon { transform: rotate(180deg); }
+.pi-filter .ant-checkbox-group { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+.pi-filter .ant-checkbox-wrapper { margin: 0; font-size: 14px; font-weight: 400; line-height: 22px; }
 @media (max-width: 1280px) {
   nav button { padding: 0 11px; font-size: 13px; }
   .profile span { display: none; }
