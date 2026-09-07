@@ -16,16 +16,23 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .page-heading { height: 72px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
 .page-heading h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; }
 .heading-actions { display: flex; align-items: center; gap: 12px; }
-.toolbar { height: 48px; padding: 8px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0; }
-.table-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.filter-button { display: inline-flex; align-items: center; }
-.filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; margin-left: 4px; padding: 0 5px; border-radius: 9px; color: #fff; background: #1890ff; font-size: 11px; line-height: 18px; }
-.filter-chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border: 1px solid #91d5ff; border-radius: 2px; color: rgba(0,0,0,.85); background: #e6f7ff; font-size: 14px; white-space: nowrap; }
-.filter-chip .anticon { color: rgba(0,0,0,.45); font-size: 11px; cursor: pointer; }
+.table-controls { border-top: 1px solid #f0f0f0; }
+.export-row { height: 78px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+.export-summary, .export-actions { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.export-summary > span:first-child { font-size: 15px; }
+.export-summary a { color: #1890ff; cursor: pointer; }
+.vertical-rule { width: 1px; height: 32px; margin: 0 2px; background: #f0f0f0; }
+.export-actions { position: relative; gap: 4px; }
+.export-actions .ant-btn-link { padding-left: 8px; padding-right: 8px; }
+.export-limit { margin-right: 14px; padding: 0 8px; border-radius: 10px; color: #1890ff; background: #e6f7ff; font-size: 12px; line-height: 20px; }
+.filter-button { height: 40px; padding: 0 16px; font-size: 15px; }
+.filter-badge { position: absolute; top: -18px; right: -10px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; background: #1890ff; font-size: 13px; box-shadow: 0 0 0 2px #fff; }
+.active-filters { height: 78px; padding: 0 24px; display: flex; align-items: center; gap: 24px; }
+.filter-chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px; border: 1px solid #91d5ff; border-radius: 2px; color: #1890ff; background: #e6f7ff; font-size: 13px; cursor: pointer; }
+.filter-chip .anticon { font-size: 10px; }
+.reset-filters { display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; color: #1890ff; background: transparent; font-size: 14px; cursor: pointer; }
 .selection { color: #1890ff; font-size: 13px; }
-.pager { display: flex; gap: 10px; align-items: center; font-size: 12px; }
-.pager .ant-pagination { display: flex; margin: 0; }
-.table-wrap { height: calc(100vh - 167px); overflow: hidden; border-top: 1px solid #f0f0f0; }
+.table-wrap { height: calc(100vh - 275px); overflow: hidden; border-top: 1px solid #f0f0f0; }
 .ant-table { font-size: 14px; }
 .ant-table.ant-table-small .ant-table-thead > tr > th { height: 51px; padding: 8px 9px; background: #fafafa; color: rgba(0,0,0,.45); font-weight: 500; line-height: 18px; }
 .ant-table.ant-table-small .ant-table-thead > tr:first-child > th[rowspan='2'] { height: 102px; }

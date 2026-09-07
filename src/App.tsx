@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Button, Dropdown, Menu, message, Pagination, Select, Table, Tag, Tooltip } from 'antd';
+import { Button, Dropdown, Menu, message, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined, FullscreenOutlined,
+  CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
   QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
@@ -50,9 +50,8 @@ const data: Promo[] = products.map((item, index) => ({
 const icon = <FilterFilled className="filter-icon" />;
 
 function App() {
-  const [compact, setCompact] = useState(false);
   const [selected, setSelected] = useState<React.Key[]>([]);
-  const [page, setPage] = useState(1);
+  const [authorFilter, setAuthorFilter] = useState(true);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
     { title: '', width: 40, fixed: 'left', render: () => <span className="validation-dot" /> },
@@ -131,24 +130,32 @@ function App() {
       </div>
     </section>
 
-    <section className="toolbar">
-      <div className="table-actions">
-        <Button icon={<DownloadOutlined />} onClick={() => notify('Скачать 111 400 промо')}>Скачать промо</Button>
-        <Button icon={<FilterOutlined />} className="filter-button" onClick={() => notify('Фильтры')}>Фильтры <span className="filter-count">1</span></Button>
-        <span className="filter-chip">Автор: Елена Терехова <CloseOutlined /></span>
-        {selected.length ? <span className="selection">Выбрано: {selected.length}</span> : null}
+    <section className="table-controls">
+      <div className="export-row">
+        <div className="export-summary">
+          <span>Показано 100 000 актуальных промо</span>
+          <Button icon={<DownloadOutlined />} onClick={() => notify('Скачать промо')}>Скачать промо</Button>
+          <span className="vertical-rule" />
+          <span>Все найденные промо можно <a onClick={() => notify('Скачать все найденные промо')}>скачать здесь</a></span>
+        </div>
+        <div className="export-actions">
+          <Button type="link" icon={<SettingOutlined />} onClick={() => notify('Настроить выгрузку')}>Настроить выгрузку</Button>
+          <span className="export-limit">80/80</span>
+          <Button icon={<FilterOutlined />} className="filter-button" onClick={() => notify('Фильтры')}>Фильтры</Button>
+          {authorFilter && <span className="filter-badge">1</span>}
+        </div>
       </div>
-      <div className="pager"><span>1–3000 из 111 400</span><Pagination size="small" current={page} total={50000} pageSize={1000} showSizeChanger={false} onChange={setPage} />
-        <Select size="small" value="3000" style={{width: 142}}><Select.Option value="3000">3000 на странице</Select.Option></Select>
-        <Tooltip title="Плотность строк"><Button type="text" icon={<SettingOutlined />} onClick={() => setCompact(v => !v)} /></Tooltip>
-        <Button type="text" icon={<FullscreenOutlined />} onClick={() => document.documentElement.requestFullscreen?.()} />
+      <div className="active-filters">
+        {authorFilter && <button className="filter-chip" onClick={() => setAuthorFilter(false)}>Автор (1) <CloseOutlined /></button>}
+        {authorFilter && <button className="reset-filters" onClick={() => setAuthorFilter(false)}><CloseOutlined /> Сбросить все фильтры</button>}
+        {selected.length > 0 && <span className="selection">Выбрано: {selected.length}</span>}
       </div>
     </section>
 
-    <main className={compact ? 'table-wrap compact' : 'table-wrap'}>
+    <main className="table-wrap">
       <Table<Promo>
         size="small" columns={columns} dataSource={data} pagination={false}
-        scroll={{ x: 5216, y: 'calc(100vh - 253px)' }}
+        scroll={{ x: 5216, y: 'calc(100vh - 337px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
     </main>
