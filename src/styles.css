@@ -35,8 +35,9 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .validation-dot { display: block; width: 5px; height: 5px; border-radius: 50%; background: #52c41a; margin: auto; }
 .muted { color: rgba(0,0,0,.45); }
 .ant-btn { border-radius: 2px; }
-.competitor-price { display: block; text-decoration: underline dotted; text-underline-offset: 3px; }
-.competitor-price small { display: block; color: rgba(0,0,0,.45); font-size: 11px; line-height: 16px; text-decoration: none; }
+.competitor-price { display: block; }
+.competitor-price .amount { text-decoration: underline dotted; text-underline-offset: 3px; }
+.competitor-price small { display: block; color: rgba(0,0,0,.45); font-size: 11px; line-height: 16px; }
 .ant-tag { margin: 0; border-radius: 2px; }
 @media (max-width: 1280px) {
   nav button { padding: 0 11px; font-size: 13px; }

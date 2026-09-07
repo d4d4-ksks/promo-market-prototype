@@ -23,12 +23,20 @@ const products = [
   ['300095', 'Батончик Bombbar | шоколад-фундук, 60 г', 'Москва', 'Скидка', 'Здоровое питание'],
 ];
 
+const numberFrom = (value: string | number) => Number(String(value).replace(',', '.').replace(/[^\d.-]/g, ''));
+const piFor = (promoPrice: string | number, competitorPrice: string | number) =>
+  (numberFrom(promoPrice) / numberFrom(competitorPrice)).toFixed(2).replace('.', ',');
+const piTone = (value: string) => {
+  const numeric = numberFrom(value);
+  return numeric <= 1.05 ? 'green' : numeric < 1.15 ? 'gold' : 'red';
+};
+
 const data: Promo[] = products.map((item, index) => ({
   key: index + 1, promo: item[0], status: index === 3 ? 'Ожидает согласования' : 'Проставление промоцен',
   name: item[1], city: item[2], type: item[3], category: item[4],
   buyPeriod: `${5 + index}.03 – ${5 + index}.05`, buyRegular: `${195 + index * 8},91`, buyPromo: `${164 + index * 7},56`, buyDiscount: `${16 + index % 7},00`,
   salePeriod: `${5 + index}.03 – ${5 + index}.05`, saleRegular: `${683 + index * 13},52`, salePromo: `${642 + index * 12},01`, saleDiscount: `${18 + index % 8},00`,
-  competitorPrice: `${669 + index * 9}`, pi: `${(0.97 + (index % 5) * .02).toFixed(2).replace('.', ',')}`, kvi: index % 3 ? '—' : 'KVI',
+  competitorPrice: Math.round((642.01 + index * 12) / [0.98, 1.09, 1.18][index % 3]), kvi: index % 3 ? '—' : 'KVI',
   regularPrice: index % 4 ? 'Да' : 'Нет', matrix: index % 5 ? 'Да' : 'Нет',
   marginPromo: `${15 + index % 4}`, marginRegular: `${10 + index % 5}`, marginFront: `${20 + index % 6}`, marginBack: `${15 + index % 3}`,
   investmentSupplier: `${70 - index % 6}`, investmentSamokat: `${30 + index % 6}`,
@@ -67,8 +75,8 @@ function App() {
       { title: 'Скидка, %', dataIndex: 'saleDiscount', width: 92, align: 'right' },
     ]},
     { title: 'Конкуренты', children: [
-      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: v => <span className="competitor-price">{v}<small>(акц. цена)</small></span> },
-      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: v => <Tag color="green">{v}</Tag> },
+      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: v => <span className="competitor-price"><span className="amount">{v}</span><small>(акц. цена)</small></span> },
+      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
     { title: 'Рег. прайс', dataIndex: 'regularPrice', width: 110 },
