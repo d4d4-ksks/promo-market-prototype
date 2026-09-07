@@ -27,15 +27,16 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .ant-table.ant-table-small .ant-table-thead > tr > th { height: 51px; padding: 8px 9px; background: #fafafa; color: rgba(0,0,0,.45); font-weight: 500; line-height: 18px; }
 .ant-table.ant-table-small .ant-table-thead > tr:first-child > th[rowspan='2'] { height: 102px; }
 .ant-table.ant-table-small .ant-table-tbody > tr > td { height: 63px; padding: 8px 9px; line-height: 22px; }
-.ant-table-thead th { border-right-color: #f0f0f0 !important; }
-.ant-table-tbody td { border-right: 1px solid #f0f0f0; }
+.ant-table-thead th, .ant-table-tbody td { border-right: 0 !important; }
 .compact .ant-table.ant-table-small .ant-table-tbody > tr > td { height: 45px; padding-top: 4px; padding-bottom: 4px; }
 .filter-icon, .ant-table-thead .anticon-search { float: right; margin-top: 4px; font-size: 11px; color: rgba(0,0,0,.25); }
 .blue-dot { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #1890ff; vertical-align: 2px; }
 .validation-dot { display: block; width: 5px; height: 5px; border-radius: 50%; background: #52c41a; margin: auto; }
 .muted { color: rgba(0,0,0,.45); }
 .ant-btn { border-radius: 2px; }
-.ant-tag { margin: 0; border-radius: 2px; }
+.competitor-price { display: block; text-decoration: underline dotted; text-underline-offset: 3px; }
+.competitor-price small { display: block; color: rgba(0,0,0,.45); font-size: 11px; line-height: 16px; text-decoration: none; }
+.pi-value { color: #389e0d; }
 @media (max-width: 1280px) {
   nav button { padding: 0 11px; font-size: 13px; }
   .profile span { display: none; }

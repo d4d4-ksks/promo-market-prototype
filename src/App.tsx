@@ -1,16 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Dropdown, Menu, message, Pagination, Select, Table, Tag, Tooltip } from 'antd';
+import { Button, Dropdown, Menu, message, Pagination, Select, Table, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   DownloadOutlined, EllipsisOutlined, FilterFilled, FullscreenOutlined,
   QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
-type Promo = {
-  key: number; promo: string; status: string; name: string; city: string; type: string;
-  category: string; start: string; finish: string; regular: string; promoPrice: string;
-  discount: string; forecast: string; supplier: string;
-};
+type Promo = { key: number; [key: string]: string | number };
 
 const products = [
   ['300106', 'Гель-смазка Vizit | увлажняющий, 50 мл', 'Томск', 'Скидка', 'Красота и гигиена'],
@@ -30,9 +26,17 @@ const products = [
 const data: Promo[] = products.map((item, index) => ({
   key: index + 1, promo: item[0], status: index === 3 ? 'Ожидает согласования' : 'Проставление промоцен',
   name: item[1], city: item[2], type: item[3], category: item[4],
-  start: `${12 + index}.09.26`, finish: `${19 + index}.09.26`,
-  regular: `${349 + index * 27} ₽`, promoPrice: `${279 + index * 21} ₽`,
-  discount: `${18 + (index % 5) * 3}%`, forecast: `${1200 + index * 146} шт.`, supplier: index % 2 ? 'ООО «Маркет Лайн»' : 'ООО «Юни Трейд»',
+  buyPeriod: `${5 + index}.03 – ${5 + index}.05`, buyRegular: `${195 + index * 8},91`, buyPromo: `${164 + index * 7},56`, buyDiscount: `${16 + index % 7},00`,
+  salePeriod: `${5 + index}.03 – ${5 + index}.05`, saleRegular: `${683 + index * 13},52`, salePromo: `${642 + index * 12},01`, saleDiscount: `${18 + index % 8},00`,
+  competitorPrice: `${669 + index * 9}`, pi: `${(0.97 + (index % 5) * .02).toFixed(2).replace('.', ',')}`, kvi: index % 3 ? '—' : 'KVI',
+  regularPrice: index % 4 ? 'Да' : 'Нет', matrix: index % 5 ? 'Да' : 'Нет',
+  marginPromo: `${15 + index % 4}`, marginRegular: `${10 + index % 5}`, marginFront: `${20 + index % 6}`, marginBack: `${15 + index % 3}`,
+  investmentSupplier: `${70 - index % 6}`, investmentSamokat: `${30 + index % 6}`,
+  compensation: `${5 + index % 4}`, compensationMethod: index % 2 ? 'Off' : 'On', compensationOff: `${211 + index * 7},82`, campaign: index % 3 ? 'Летний сезон' : 'Хеллоуин',
+  superPromoType: index % 2 ? 'Главная витрина' : 'Наружная реклама', superPromoFactor: index % 2 ? '1,2' : '1,5',
+  elasticity: `${(1.71 + index * .04).toFixed(2).replace('.', ',')}`, turnoverRegular: `${1701 + index * 193},00 ₽`, turnoverPromo: `${2916 + index * 241},00 ₽`,
+  sale: index % 4 ? 'Нет' : 'Да', supplier: index % 2 ? 'ООО «Маркет Лайн»' : 'БОЛЕАР, ООО', bonus: `${15 + index % 4}`, vat: '20', request: `${6862 + index}`,
+  marketer: index % 2 ? 'apetrova@samokat.ru' : 'mguguev@samokat.ru',
 }));
 
 const icon = <FilterFilled className="filter-icon" />;
@@ -49,18 +53,55 @@ function App() {
     { title: <span>Наименование <SearchOutlined /></span>, dataIndex: 'name', width: 240, fixed: 'left', ellipsis: true },
     { title: <span>География {icon}</span>, dataIndex: 'city', width: 160, fixed: 'left', render: value => <div>{value}<div className="muted">ЦФЗ: 30</div></div> },
     { title: <span>Тип промо {icon}</span>, dataIndex: 'type', width: 130 },
-    { title: <span>Категория {icon}</span>, dataIndex: 'category', width: 170 },
-    { title: 'Период промо', children: [
-      { title: 'Начало', dataIndex: 'start', width: 105 }, { title: 'Окончание', dataIndex: 'finish', width: 105 },
+    { title: <span>Категория {icon}</span>, dataIndex: 'category', width: 160 },
+    { title: 'Закупка', children: [
+      { title: <span>Период {icon}</span>, dataIndex: 'buyPeriod', width: 160 },
+      { title: 'Рег. цена, ₽', dataIndex: 'buyRegular', width: 92, align: 'right' },
+      { title: 'Акц. цена, ₽', dataIndex: 'buyPromo', width: 92, align: 'right' },
+      { title: 'Скидка, %', dataIndex: 'buyDiscount', width: 92, align: 'right' },
     ]},
-    { title: 'Цена', children: [
-      { title: 'Регулярная', dataIndex: 'regular', width: 110, align: 'right' },
-      { title: 'Промо', dataIndex: 'promoPrice', width: 100, align: 'right', render: v => <b>{v}</b> },
-      { title: 'Скидка', dataIndex: 'discount', width: 90, align: 'right', render: v => <Tag color="blue">{v}</Tag> },
+    { title: 'Продажа', children: [
+      { title: <span>Период {icon}</span>, dataIndex: 'salePeriod', width: 160 },
+      { title: 'Рег. цена, ₽', dataIndex: 'saleRegular', width: 92, align: 'right' },
+      { title: 'Акц. цена, ₽', dataIndex: 'salePromo', width: 92, align: 'right' },
+      { title: 'Скидка, %', dataIndex: 'saleDiscount', width: 92, align: 'right' },
     ]},
-    { title: <span>Прогноз продаж {icon}</span>, dataIndex: 'forecast', width: 150, align: 'right' },
-    { title: <span>Поставщик {icon}</span>, dataIndex: 'supplier', width: 220 },
-    { title: 'НДС, %', width: 90, align: 'right', render: () => '20%' },
+    { title: 'Конкуренты', children: [
+      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: v => <span className="competitor-price">{v}<small>(акц. цена)</small></span> },
+      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: v => <span className="pi-value">{v}</span> },
+    ]},
+    { title: 'KVI', dataIndex: 'kvi', width: 60 },
+    { title: 'Рег. прайс', dataIndex: 'regularPrice', width: 110 },
+    { title: 'Матрица', dataIndex: 'matrix', width: 110 },
+    { title: 'Маржа, %', children: [
+      { title: 'Комм. промо', dataIndex: 'marginPromo', width: 85, align: 'right' },
+      { title: 'Комм. рег.', dataIndex: 'marginRegular', width: 85, align: 'right' },
+      { title: 'Фронт. рег.', dataIndex: 'marginFront', width: 85, align: 'right' },
+      { title: 'Бэк. рег.', dataIndex: 'marginBack', width: 85, align: 'right' },
+    ]},
+    { title: 'Инвестиции, %', children: [
+      { title: 'Пост.', dataIndex: 'investmentSupplier', width: 85, align: 'right' },
+      { title: 'Самокат', dataIndex: 'investmentSamokat', width: 95, align: 'right' },
+    ]},
+    { title: 'Компенсация СММ, ₽', dataIndex: 'compensation', width: 130 },
+    { title: 'Способ компенсации', dataIndex: 'compensationMethod', width: 130 },
+    { title: 'Сумма комп. OFF', dataIndex: 'compensationOff', width: 100, align: 'right' },
+    { title: <span>Кампания {icon}</span>, dataIndex: 'campaign', width: 160 },
+    { title: 'Суперпромо', children: [
+      { title: 'Тип', dataIndex: 'superPromoType', width: 192 },
+      { title: 'Эксп. коэф.', dataIndex: 'superPromoFactor', width: 100, align: 'right' },
+    ]},
+    { title: 'Товарооборот (ТО)', children: [
+      { title: 'Коэф. эласт.', dataIndex: 'elasticity', width: 80, align: 'right' },
+      { title: 'Прогноз рег.', dataIndex: 'turnoverRegular', width: 136, align: 'right' },
+      { title: 'Прогноз акц.', dataIndex: 'turnoverPromo', width: 136, align: 'right' },
+    ]},
+    { title: <span>В распродаже {icon}</span>, dataIndex: 'sale', width: 140 },
+    { title: <span>Поставщик {icon}</span>, dataIndex: 'supplier', width: 260, render: v => <a>{v}</a> },
+    { title: 'Премия', dataIndex: 'bonus', width: 120, align: 'right' },
+    { title: 'НДС, %', dataIndex: 'vat', width: 120, align: 'right' },
+    { title: <span>Номер заявки <SearchOutlined /></span>, dataIndex: 'request', width: 100, render: v => <a>{v}</a> },
+    { title: <span>Трейд-маркетолог {icon}</span>, dataIndex: 'marketer', width: 260 },
     { title: '', width: 48, fixed: 'right', render: () => <Button type="text" icon={<EllipsisOutlined />} /> },
   ], []);
 
@@ -94,8 +135,8 @@ function App() {
 
     <main className={compact ? 'table-wrap compact' : 'table-wrap'}>
       <Table<Promo>
-        bordered size="small" columns={columns} dataSource={data} pagination={false}
-        scroll={{ x: 2058, y: 'calc(100vh - 253px)' }}
+        size="small" columns={columns} dataSource={data} pagination={false}
+        scroll={{ x: 5216, y: 'calc(100vh - 253px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
     </main>
