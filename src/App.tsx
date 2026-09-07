@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Button, Dropdown, Menu, message, Pagination, Select, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  DownloadOutlined, EllipsisOutlined, FilterFilled, FullscreenOutlined,
+  CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined, FullscreenOutlined,
   QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
@@ -118,7 +118,7 @@ function App() {
 
   return <div className="app-shell">
     <header className="global-header">
-      <div className="brand"><span className="logo-mark"><span /></span><b>Промотрон</b></div>
+      <div className="brand"><img className="logo-mark" src="./logo.svg" alt="" /><b>Промотрон</b></div>
       <nav>{['Рабочее место','Поставщики','Заявки','Кампании','География','Параметры скидок','Калькулятор промо','Промо'].map(x => <button className={x === 'Промо' ? 'active' : ''} key={x}>{x}</button>)}</nav>
       <div className="profile"><QuestionCircleOutlined /><SyncOutlined /><span>Елена Терехова</span></div>
     </header>
@@ -126,14 +126,18 @@ function App() {
     <section className="page-heading">
       <h1>Промо</h1>
       <div className="heading-actions">
-        <Button icon={<DownloadOutlined />} onClick={() => notify('Скачать 111 400 промо')}>Скачать 111 400 промо</Button>
         <Button type="primary" icon={<UploadOutlined />} onClick={() => notify('Загрузить промоплан')}>Загрузить промоплан</Button>
         <Dropdown overlay={actions} trigger={['click']}><Button icon={<EllipsisOutlined />} /></Dropdown>
       </div>
     </section>
 
     <section className="toolbar">
-      <div className="selection">{selected.length ? `Выбрано: ${selected.length}` : ''}</div>
+      <div className="table-actions">
+        <Button icon={<DownloadOutlined />} onClick={() => notify('Скачать 111 400 промо')}>Скачать промо</Button>
+        <Button icon={<FilterOutlined />} className="filter-button" onClick={() => notify('Фильтры')}>Фильтры <span className="filter-count">1</span></Button>
+        <span className="filter-chip">Автор: Елена Терехова <CloseOutlined /></span>
+        {selected.length ? <span className="selection">Выбрано: {selected.length}</span> : null}
+      </div>
       <div className="pager"><span>1–3000 из 111 400</span><Pagination size="small" current={page} total={50000} pageSize={1000} showSizeChanger={false} onChange={setPage} />
         <Select size="small" value="3000" style={{width: 142}}><Select.Option value="3000">3000 на странице</Select.Option></Select>
         <Tooltip title="Плотность строк"><Button type="text" icon={<SettingOutlined />} onClick={() => setCompact(v => !v)} /></Tooltip>
