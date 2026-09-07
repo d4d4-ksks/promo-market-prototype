@@ -66,6 +66,8 @@ function App() {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [piOpen, setPiOpen] = useState(false);
   const [piFilters, setPiFilters] = useState<string[]>([]);
+  const [draftAuthorFilter, setDraftAuthorFilter] = useState(true);
+  const [draftPiFilters, setDraftPiFilters] = useState<string[]>([]);
 
   const filteredData = useMemo(() => piFilters.length === 0 ? data : data.filter(record => {
     const tone = piTone(piFor(record.salePromo, record.competitorPrice));
@@ -145,6 +147,17 @@ function App() {
   ], []);
 
   const notify = (text: string) => message.info(`${text} — демо-действие`);
+  const openFilters = () => {
+    setDraftAuthorFilter(authorFilter);
+    setDraftPiFilters(piFilters);
+    setFiltersVisible(true);
+  };
+  const closeFilters = () => setFiltersVisible(false);
+  const applyFilters = () => {
+    setAuthorFilter(draftAuthorFilter);
+    setPiFilters(draftPiFilters);
+    setFiltersVisible(false);
+  };
   const actions = <Menu items={[{ key: 'archive', label: 'Архив промо' }, { key: 'template', label: 'Скачать шаблон' }]} onClick={({key}) => notify(key === 'archive' ? 'Архив промо' : 'Скачать шаблон')} />;
 
   return <div className="app-shell">
@@ -182,7 +195,7 @@ function App() {
         <div className="export-actions">
           <Button type="link" icon={<SettingOutlined />} onClick={() => notify('Настроить выгрузку')}>Настроить выгрузку</Button>
           <span className="export-limit">80/80</span>
-          <Button icon={<FilterOutlined />} className="filter-button" onClick={() => setFiltersVisible(true)}>Фильтры</Button>
+          <Button icon={<FilterOutlined />} className="filter-button" onClick={openFilters}>Фильтры</Button>
           {(authorFilter || piFilters.length > 0) && <span className="filter-badge">{Number(authorFilter) + Number(piFilters.length > 0)}</span>}
         </div>
       </div>
@@ -220,7 +233,7 @@ function App() {
         <div className="discount-content">
           <section className="discount-notice"><InfoCircleFilled /><div><b>К категориям, для которых не созданы собственные параметры, применяются общие параметры</b><span>Минимальная маржинальность 0%, скидка 10% — 50%, инвестиции поставщик/Самокат 80%/20%</span></div></section>
           <section className="discount-card">
-            <div className="discount-toolbar"><b>Параметры скидок</b><div><button className="ds-filter-button" onClick={() => setFiltersVisible(true)}><FilterOutlined /></button><button className="ds-create-button" onClick={() => notify('Создать параметр')}><PlusOutlined />Создать</button></div></div>
+            <div className="discount-toolbar"><b>Параметры скидок</b><div><button className="ds-filter-button" onClick={openFilters}><FilterOutlined /></button><button className="ds-create-button" onClick={() => notify('Создать параметр')}><PlusOutlined />Создать</button></div></div>
             <div className="discount-filterbar">{['Категория', 'География', 'Скидка', 'Мин. маржинальность', 'Инвестиции', 'Целевой PI'].map(label => <button key={label}>{label}<DownOutlined /></button>)}</div>
             <div className="parameters-table">
               <Table columns={parameterColumns} dataSource={parameterData} pagination={false} rowSelection={{ columnWidth: 64 }} scroll={{ x: 1712, y: 'calc(100vh - 469px)' }} />
@@ -236,17 +249,17 @@ function App() {
       closable={false}
       mask={false}
       visible={filtersVisible}
-      onClose={() => setFiltersVisible(false)}
+      onClose={closeFilters}
       className="filters-drawer"
-      title={<div className="filters-title"><Button type="text" icon={<CloseOutlined />} onClick={() => setFiltersVisible(false)} aria-label="Закрыть фильтры" /><b>Фильтры</b></div>}
-      footer={<div className="filters-footer"><Button onClick={() => { setAuthorFilter(false); setPiFilters([]); }}>Сбросить все фильтры</Button><Button type="primary" onClick={() => setFiltersVisible(false)}>Искать промо</Button></div>}
+      title={<div className="filters-title"><Button type="text" icon={<CloseOutlined />} onClick={closeFilters} aria-label="Закрыть фильтры" /><b>Фильтры</b></div>}
+      footer={<div className="filters-footer"><Button onClick={() => { setDraftAuthorFilter(false); setDraftPiFilters([]); }}>Сбросить все фильтры</Button><Button type="primary" onClick={applyFilters}>Применить</Button></div>}
     >
       <div className="filter-list">
-        <div className="filter-item author-filter"><span>Автор</span>{authorFilter && <><span className="author-count">1</span><button onClick={() => setAuthorFilter(false)}>сбросить</button></>}<DownOutlined /></div>
+        <div className="filter-item author-filter"><span>Автор</span>{draftAuthorFilter && <><span className="author-count">1</span><button onClick={() => setDraftAuthorFilter(false)}>сбросить</button></>}<DownOutlined /></div>
         {['Статус', 'Промо id', 'Ошибки и предупреждения', 'Организация', 'Наименование', 'Период продажи'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
         <div className={`filter-item pi-filter ${piOpen ? 'open' : ''}`}>
           <button className="filter-item-heading" onClick={() => setPiOpen(value => !value)}><span>PI</span><DownOutlined /></button>
-          {piOpen && <Checkbox.Group value={piFilters} onChange={values => setPiFilters(values as string[])}>
+          {piOpen && <Checkbox.Group value={draftPiFilters} onChange={values => setDraftPiFilters(values as string[])}>
             <Checkbox value="green">Равен целевому</Checkbox>
             <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
             <Checkbox value="red">Значительно отличается от целевого</Checkbox>
