@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Button, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
+import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  ArrowRightOutlined, CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
+  ArrowRightOutlined, CloseOutlined, DownOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
   QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
@@ -53,6 +53,14 @@ function App() {
   const [selected, setSelected] = useState<React.Key[]>([]);
   const [authorFilter, setAuthorFilter] = useState(true);
   const [competitorPromo, setCompetitorPromo] = useState<Promo | null>(null);
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [piOpen, setPiOpen] = useState(false);
+  const [piFilters, setPiFilters] = useState<string[]>([]);
+
+  const filteredData = useMemo(() => piFilters.length === 0 ? data : data.filter(record => {
+    const tone = piTone(piFor(record.salePromo, record.competitorPrice));
+    return piFilters.includes(tone);
+  }), [piFilters]);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
     { title: '', width: 40, fixed: 'left', render: () => <span className="validation-dot" /> },
@@ -142,24 +150,50 @@ function App() {
         <div className="export-actions">
           <Button type="link" icon={<SettingOutlined />} onClick={() => notify('Настроить выгрузку')}>Настроить выгрузку</Button>
           <span className="export-limit">80/80</span>
-          <Button icon={<FilterOutlined />} className="filter-button" onClick={() => notify('Фильтры')}>Фильтры</Button>
-          {authorFilter && <span className="filter-badge">1</span>}
+          <Button icon={<FilterOutlined />} className="filter-button" onClick={() => setFiltersVisible(true)}>Фильтры</Button>
+          {(authorFilter || piFilters.length > 0) && <span className="filter-badge">{Number(authorFilter) + Number(piFilters.length > 0)}</span>}
         </div>
       </div>
       <div className="active-filters">
         {authorFilter && <button className="filter-chip" onClick={() => setAuthorFilter(false)}>Автор (1) <CloseOutlined /></button>}
-        {authorFilter && <button className="reset-filters" onClick={() => setAuthorFilter(false)}><CloseOutlined /> Сбросить все фильтры</button>}
+        {piFilters.length > 0 && <button className="filter-chip" onClick={() => setPiFilters([])}>PI ({piFilters.length}) <CloseOutlined /></button>}
+        {(authorFilter || piFilters.length > 0) && <button className="reset-filters" onClick={() => { setAuthorFilter(false); setPiFilters([]); }}><CloseOutlined /> Сбросить все фильтры</button>}
         {selected.length > 0 && <span className="selection">Выбрано: {selected.length}</span>}
       </div>
     </section>
 
     <main className="table-wrap">
       <Table<Promo>
-        size="small" columns={columns} dataSource={data} pagination={false}
+        size="small" columns={columns} dataSource={filteredData} pagination={false}
         scroll={{ x: 5216, y: 'calc(100vh - 337px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
     </main>
+    <Drawer
+      width={360}
+      placement="right"
+      closable={false}
+      mask={false}
+      visible={filtersVisible}
+      onClose={() => setFiltersVisible(false)}
+      className="filters-drawer"
+      title={<div className="filters-title"><Button type="text" icon={<CloseOutlined />} onClick={() => setFiltersVisible(false)} aria-label="Закрыть фильтры" /><b>Фильтры</b></div>}
+      footer={<div className="filters-footer"><Button onClick={() => { setAuthorFilter(false); setPiFilters([]); }}>Сбросить все фильтры</Button><Button type="primary" onClick={() => setFiltersVisible(false)}>Искать промо</Button></div>}
+    >
+      <div className="filter-list">
+        <div className="filter-item author-filter"><span>Автор</span>{authorFilter && <><span className="author-count">1</span><button onClick={() => setAuthorFilter(false)}>сбросить</button></>}<DownOutlined /></div>
+        {['Статус', 'Промо id', 'Ошибки и предупреждения', 'Организация', 'Наименование', 'Период продажи'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
+        <div className={`filter-item pi-filter ${piOpen ? 'open' : ''}`}>
+          <button className="filter-item-heading" onClick={() => setPiOpen(value => !value)}><span>PI</span><DownOutlined /></button>
+          {piOpen && <Checkbox.Group value={piFilters} onChange={values => setPiFilters(values as string[])}>
+            <Checkbox value="green">Равен целевому</Checkbox>
+            <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
+            <Checkbox value="red">Значительно отличается от целевого</Checkbox>
+          </Checkbox.Group>}
+        </div>
+        {['Вид промо', 'Тип промо', 'Матрица', 'Категория', 'Период закупки', 'Кампания', 'Маржа комм. промо', 'Способ компенсации', 'Тип суперпромо', 'Эксп. коэф. суперпромо', 'Премия', 'Продажа: скидка', 'Поставщик', 'Рег. прайс', 'Маржа: комм. рег', 'Маржа: фронт рег.', 'Маржа: бэк рег.', 'Инвестиции поставщика', 'Инвестиции самоката', 'Сумма комп. OFF', 'ТО: коэф. эласт.', 'ТО: прогноз рег.', 'ТО: прогноз акц.', 'В распродаже', 'Номер заявки'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
+      </div>
+    </Drawer>
     <Drawer
       width={360}
       placement="right"
@@ -172,7 +206,8 @@ function App() {
       <div className="competitor-list">
         {['1 эшелон', 'Пятёрочка', 'Магнит', '2 эшелон', 'Озон', 'Лавка', '3 эшелон', 'Лента', 'Перекрёсток'].map((market, index) => {
           const tier = market.includes('эшелон');
-          const price = competitorPromo?.competitorPrice ?? 260;
+          const basePrice = Number(competitorPromo?.competitorPrice ?? 260);
+          const price = Math.max(1, Math.round(basePrice + [-7, -12, -3, 5, 2, 9, 14, 11, 18][index]));
           const pi = competitorPromo ? piFor(competitorPromo.salePromo, price) : '1,06';
           return <div className={tier ? 'competitor-row tier-row' : 'competitor-row'} key={market}>
             <span>{market}</span><span>{price} ₽</span><Tag color={piTone(pi)}>{pi}</Tag><span>29.08.26</span>
