@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react';
 import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  ArrowRightOutlined, CloseOutlined, DownOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
-  QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
+  AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined,
+  DownloadOutlined, EllipsisOutlined, EnvironmentOutlined, FileTextOutlined, FilterFilled, FilterOutlined,
+  InboxOutlined, InfoCircleFilled, LeftOutlined, MenuFoldOutlined, PercentageOutlined, PlusOutlined,
+  QuestionCircleOutlined, RightOutlined, SearchOutlined, SettingOutlined, SlidersOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
 type Promo = { key: number; [key: string]: string | number };
@@ -49,7 +51,15 @@ const data: Promo[] = products.map((item, index) => ({
 
 const icon = <FilterFilled className="filter-icon" />;
 
+const parameterCategories = ['Автомобильные товары и запчасти', 'Аксессуары fashion', 'Алкоголь', 'Бады и Витамины', 'Бакалея', 'Безалкогольные напитки', 'Бытовая техника и Электроника', 'Все для дома', 'Гигиена', 'Детское питание'];
+const parameterData = parameterCategories.map((category, index) => ({
+  key: index + 1, category, level: 'КАТ. 1', geography: 'Вся', discount: index < 6 ? 10 : 15,
+  targetPi: index < 8 ? 1 : 1.05, marginCommercial: 0, marginFront: 0, marginBack: index % 3,
+  supplierInvestment: 80, samokatInvestment: 20,
+}));
+
 function App() {
+  const [page, setPage] = useState<'promo' | 'parameters'>('promo');
   const [selected, setSelected] = useState<React.Key[]>([]);
   const [authorFilter, setAuthorFilter] = useState(true);
   const [competitorPromo, setCompetitorPromo] = useState<Promo | null>(null);
@@ -121,17 +131,39 @@ function App() {
     { title: '', width: 48, render: () => <Button type="text" icon={<EllipsisOutlined />} /> },
   ], []);
 
+  const parameterColumns = useMemo<ColumnsType<any>>(() => [
+    { title: 'Категория', dataIndex: 'category', width: 368 },
+    { title: 'Уровень', dataIndex: 'level', width: 92, render: value => <span className="level-label">{value}</span> },
+    { title: 'География', dataIndex: 'geography', width: 140 },
+    { title: 'Скидка от, %', dataIndex: 'discount', width: 124 },
+    { title: 'Целевой PI', dataIndex: 'targetPi', width: 124 },
+    { title: 'Маржа комм., %', dataIndex: 'marginCommercial', width: 152 },
+    { title: 'Маржа фронт, %', dataIndex: 'marginFront', width: 152 },
+    { title: 'Маржа бэк, %', dataIndex: 'marginBack', width: 140 },
+    { title: 'Инвестиции поставщика, %', dataIndex: 'supplierInvestment', width: 210 },
+    { title: 'Инвестиции Самоката, %', dataIndex: 'samokatInvestment', width: 210 },
+  ], []);
+
   const notify = (text: string) => message.info(`${text} — демо-действие`);
   const actions = <Menu items={[{ key: 'archive', label: 'Архив промо' }, { key: 'template', label: 'Скачать шаблон' }]} onClick={({key}) => notify(key === 'archive' ? 'Архив промо' : 'Скачать шаблон')} />;
 
   return <div className="app-shell">
-    <header className="global-header">
+    {page === 'promo' && <header className="global-header">
       <div className="brand"><img className="logo-mark" src="./logo.svg" alt="" /><b>Промотрон</b></div>
-      <nav>{['Рабочее место','Поставщики','Заявки','Кампании','География','Параметры скидок','Калькулятор промо','Промо'].map(x => <button className={x === 'Промо' ? 'active' : ''} key={x}>{x}</button>)}</nav>
+      <nav>{['Рабочее место','Поставщики','Заявки','Кампании','География','Параметры промо','Калькулятор промо','Промо'].map(x => {
+        const active = x === 'Промо';
+        return <button className={active ? 'active' : ''} key={x} onClick={() => {
+          if (x === 'Промо' || x === 'Параметры промо') {
+            setPage(x === 'Промо' ? 'promo' : 'parameters');
+            setFiltersVisible(false);
+            setCompetitorPromo(null);
+          }
+        }}>{x}</button>;
+      })}</nav>
       <div className="profile"><QuestionCircleOutlined /><SyncOutlined /><span>Елена Терехова</span></div>
-    </header>
+    </header>}
 
-    <section className="page-heading">
+    {page === 'promo' ? <><section className="page-heading">
       <h1>Промо</h1>
       <div className="heading-actions">
         <Button type="primary" icon={<UploadOutlined />} onClick={() => notify('Загрузить промоплан')}>Загрузить промоплан</Button>
@@ -168,7 +200,36 @@ function App() {
         scroll={{ x: 5216, y: 'calc(100vh - 337px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
-    </main>
+    </main></> : <div className="discount-layout">
+      <aside className="discount-sidebar">
+        <div className="discount-brand"><span className="discount-logo"><img src="./logo.svg" alt="" /></span><b>Промотрон</b></div>
+        <div className="discount-menu">
+          {[
+            [<AppstoreOutlined />, 'Рабочее место'], [<InboxOutlined />, 'Поставщики'], [<FileTextOutlined />, 'Заявки'],
+            [<BgColorsOutlined />, 'Кампании'], [<EnvironmentOutlined />, 'Кластеры'], [<SlidersOutlined />, 'Параметры скидок'],
+            [<CalculatorOutlined />, 'Калькулятор промо'], [<PercentageOutlined />, 'Промо'],
+          ].map(([menuIcon, label]) => <button key={String(label)} className={label === 'Параметры скидок' ? 'active' : ''} onClick={() => label === 'Промо' && setPage('promo')}><span>{menuIcon}</span>{label}</button>)}
+        </div>
+        <div className="discount-user"><span>eaterekhova@ecom.tech</span><MenuFoldOutlined /></div>
+      </aside>
+      <main className="discount-main">
+        <header className="discount-header">
+          <h1>Параметры скидок</h1>
+          <div className="discount-tabs"><button className="active">Самокат</button><button>Мегамаркет</button></div>
+        </header>
+        <div className="discount-content">
+          <section className="discount-notice"><InfoCircleFilled /><div><b>К категориям, для которых не созданы собственные параметры, применяются общие параметры</b><span>Минимальная маржинальность 0%, скидка 10% — 50%, инвестиции поставщик/Самокат 80%/20%</span></div></section>
+          <section className="discount-card">
+            <div className="discount-toolbar"><b>Параметры скидок</b><div><button className="ds-filter-button" onClick={() => setFiltersVisible(true)}><FilterOutlined /></button><button className="ds-create-button" onClick={() => notify('Создать параметр')}><PlusOutlined />Создать</button></div></div>
+            <div className="discount-filterbar">{['Категория', 'География', 'Скидка', 'Мин. маржинальность', 'Инвестиции', 'Целевой PI'].map(label => <button key={label}>{label}<DownOutlined /></button>)}</div>
+            <div className="parameters-table">
+              <Table columns={parameterColumns} dataSource={parameterData} pagination={false} rowSelection={{ columnWidth: 64 }} scroll={{ x: 1712, y: 'calc(100vh - 469px)' }} />
+            </div>
+            <div className="discount-pagination"><b>1–250 из 20 000</b><div><button disabled><LeftOutlined /></button>{['1','2','3','4','5','…','10'].map(value => <button className={value === '1' ? 'active' : ''} key={value}>{value}</button>)}<button><RightOutlined /></button></div></div>
+          </section>
+        </div>
+      </main>
+    </div>}
     <Drawer
       width={360}
       placement="right"
