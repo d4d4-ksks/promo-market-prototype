@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Dropdown, Menu, message, Pagination, Select, Table, Tooltip } from 'antd';
+import { Button, Dropdown, Menu, message, Pagination, Select, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   DownloadOutlined, EllipsisOutlined, FilterFilled, FullscreenOutlined,
@@ -9,7 +9,7 @@ import {
 type Promo = { key: number; [key: string]: string | number };
 
 const products = [
-  ['300106', 'Гель-смазка Vizit | увлажняющий, 50 мл', 'Томск', 'Скидка', 'Красота и гигиена'],
+  ['300106', 'Гель для стирки Ariel | Color, 1,3 л', 'Томск', 'Скидка', 'Уход за домом'],
   ['300105', 'Пятновыводитель Wide Haiter | EX Power Foam, 400 мл', 'Москва', 'Скидка', 'Уход за домом'],
   ['300104', 'Средство Meine Liebe | Eco, для мытья посуды', 'Томск', 'Скидка', 'Уход за домом'],
   ['300103', 'Конфеты шоколадные Комильфо | фисташка, 116 г', 'Санкт-Петербург', '1 + 1', 'Сладости'],
@@ -68,7 +68,7 @@ function App() {
     ]},
     { title: 'Конкуренты', children: [
       { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: v => <span className="competitor-price">{v}<small>(акц. цена)</small></span> },
-      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: v => <span className="pi-value">{v}</span> },
+      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: v => <Tag color="green">{v}</Tag> },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
     { title: 'Рег. прайс', dataIndex: 'regularPrice', width: 110 },
