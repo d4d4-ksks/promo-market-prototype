@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Button, Dropdown, Menu, message, Table, Tag } from 'antd';
+import { Button, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
+  ArrowRightOutlined, CloseOutlined, DownloadOutlined, EllipsisOutlined, FilterFilled, FilterOutlined,
   QuestionCircleOutlined, SearchOutlined, SettingOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
@@ -52,6 +52,7 @@ const icon = <FilterFilled className="filter-icon" />;
 function App() {
   const [selected, setSelected] = useState<React.Key[]>([]);
   const [authorFilter, setAuthorFilter] = useState(true);
+  const [competitorPromo, setCompetitorPromo] = useState<Promo | null>(null);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
     { title: '', width: 40, fixed: 'left', render: () => <span className="validation-dot" /> },
@@ -74,7 +75,7 @@ function App() {
       { title: 'Скидка, %', dataIndex: 'saleDiscount', width: 92, align: 'right' },
     ]},
     { title: 'Конкуренты', children: [
-      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: v => <span className="competitor-price"><span className="amount">{v}</span><small>(акц. цена)</small></span> },
+      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
       { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
@@ -159,6 +160,27 @@ function App() {
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
     </main>
+    <Drawer
+      width={360}
+      placement="right"
+      closable={false}
+      visible={Boolean(competitorPromo)}
+      onClose={() => setCompetitorPromo(null)}
+      className="competitor-drawer"
+      title={<div className="drawer-title"><Button type="text" icon={<CloseOutlined />} onClick={() => setCompetitorPromo(null)} aria-label="Закрыть" /><span>{competitorPromo?.name}</span></div>}
+    >
+      <div className="competitor-list">
+        {['1 эшелон', 'Пятёрочка', 'Магнит', '2 эшелон', 'Озон', 'Лавка', '3 эшелон', 'Лента', 'Перекрёсток'].map((market, index) => {
+          const tier = market.includes('эшелон');
+          const price = competitorPromo?.competitorPrice ?? 260;
+          const pi = competitorPromo ? piFor(competitorPromo.salePromo, price) : '1,06';
+          return <div className={tier ? 'competitor-row tier-row' : 'competitor-row'} key={market}>
+            <span>{market}</span><span>{price} ₽</span><Tag color={piTone(pi)}>{pi}</Tag><span>29.08.26</span>
+          </div>;
+        })}
+      </div>
+      <Button icon={<ArrowRightOutlined />} onClick={() => notify('Посмотреть историю')}>Посмотреть историю</Button>
+    </Drawer>
   </div>;
 }
 
