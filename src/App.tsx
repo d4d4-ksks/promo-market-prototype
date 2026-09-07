@@ -109,7 +109,7 @@ function App() {
     { title: 'НДС, %', dataIndex: 'vat', width: 120, align: 'right' },
     { title: <span>Номер заявки <SearchOutlined /></span>, dataIndex: 'request', width: 100, render: v => <a>{v}</a> },
     { title: <span>Трейд-маркетолог {icon}</span>, dataIndex: 'marketer', width: 260 },
-    { title: '', width: 48, fixed: 'right', render: () => <Button type="text" icon={<EllipsisOutlined />} /> },
+    { title: '', width: 48, render: () => <Button type="text" icon={<EllipsisOutlined />} /> },
   ], []);
 
   const notify = (text: string) => message.info(`${text} — демо-действие`);
