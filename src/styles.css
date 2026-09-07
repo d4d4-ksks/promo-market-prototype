@@ -45,6 +45,57 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .table-wrap .ant-table-body::-webkit-scrollbar-thumb { min-width: 72px; border: 3px solid #fafafa; border-radius: 7px; background: #bfbfbf; }
 .table-wrap .ant-table-body::-webkit-scrollbar-thumb:hover { background: #999; }
 .table-wrap .ant-table-body::-webkit-scrollbar-corner { background: #fafafa; border: 1px solid #ededed; }
+.discount-layout { height: 100vh; display: flex; min-width: 1180px; background: #f4f4f4; color: #1a1b1c; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.discount-sidebar { width: 224px; flex: 0 0 224px; display: flex; flex-direction: column; border-right: 1px solid #e1e2e3; background: #fff; }
+.discount-brand { height: 88px; display: flex; align-items: center; gap: 8px; padding: 16px; font-size: 14px; }
+.discount-brand b { font-weight: 500; }
+.discount-logo { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; background: #2d5799; overflow: hidden; }
+.discount-logo img { width: 34px; height: 34px; filter: brightness(0) invert(1); }
+.discount-menu { flex: 1; overflow-y: auto; padding-top: 8px; }
+.discount-menu button { width: 100%; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border: 0; border-left: 2px solid transparent; background: #fff; color: #1a1b1c; font-size: 14px; text-align: left; cursor: pointer; }
+.discount-menu button > span { width: 16px; font-size: 16px; }
+.discount-menu button:hover { background: #f4f4f4; }
+.discount-menu button.active { border-left-color: #0072e5; background: #ebf5fd; }
+.discount-user { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-top: 1px solid #e1e2e3; font-size: 14px; }
+.discount-main { min-width: 0; flex: 1; }
+.discount-header { height: 129px; display: flex; flex-direction: column; border-bottom: 1px solid #e1e2e3; background: #fff; }
+.discount-header h1 { height: 88px; margin: 0; padding: 24px 32px 16px; font-size: 24px; font-weight: 500; line-height: 32px; }
+.discount-tabs { height: 40px; display: flex; padding-left: 16px; }
+.discount-tabs button { position: relative; height: 40px; padding: 8px 16px; border: 0; background: transparent; color: #585a5c; font-size: 16px; cursor: pointer; }
+.discount-tabs button.active { color: #1a1b1c; }
+.discount-tabs button.active::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: #0072e5; }
+.discount-content { height: calc(100vh - 129px); padding: 16px; overflow: hidden; }
+.discount-notice { min-height: 86px; display: flex; gap: 16px; align-items: flex-start; padding: 17px; border: 1px solid #70b5f0; border-radius: 8px; background: #ebf5fd; font-size: 16px; line-height: 24px; }
+.discount-notice > .anticon { margin-top: 1px; color: #0072e5; font-size: 24px; }
+.discount-notice div { display: flex; flex-direction: column; gap: 4px; }
+.discount-notice b { font-weight: 500; }
+.discount-card { height: calc(100% - 102px); margin-top: 16px; overflow: hidden; border: 1px solid #e1e2e3; border-radius: 12px; background: #fff; }
+.discount-toolbar { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; }
+.discount-toolbar > b { font-size: 16px; font-weight: 500; }
+.discount-toolbar > div { display: flex; gap: 12px; }
+.discount-toolbar button { height: 40px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.ds-filter-button { width: 40px; border: 1px solid #0072e5; color: #0059b7; background: #fff; }
+.ds-create-button { display: flex; align-items: center; gap: 8px; padding: 0 16px; border: 1px solid transparent; color: #fff; background: #0072e5; }
+.discount-filterbar { height: 48px; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-top: 1px solid #e1e2e3; }
+.discount-filterbar button { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid #adafb1; border-radius: 18px; color: #1a1b1c; background: #fff; font-size: 14px; cursor: pointer; }
+.discount-filterbar button .anticon { font-size: 11px; }
+.parameters-table { height: calc(100% - 160px); overflow: hidden; border-top: 1px solid #e1e2e3; background: #fff; }
+.parameters-table .ant-table { color: #1a1b1c; font-size: 16px; }
+.parameters-table .ant-table-thead > tr > th { height: 48px; padding: 8px 16px; border-right: 0 !important; border-bottom: 1px solid #e1e2e3; background: #f4f4f4; color: #585a5c; font-weight: 400; }
+.parameters-table .ant-table-tbody > tr > td { height: 49px; padding: 8px 16px; border-right: 0 !important; border-bottom: 1px solid #e1e2e3; }
+.parameters-table .ant-checkbox-inner { width: 24px; height: 24px; border-color: #adafb1; border-radius: 8px; }
+.level-label { display: inline-flex; height: 24px; align-items: center; padding: 0 8px; border: 1px solid #adafb1; border-radius: 4px; color: #585a5c; background: #f4f4f4; font-size: 12px; }
+.parameters-table .ant-table-body { scrollbar-color: #bfbfbf #fafafa; scrollbar-width: auto; }
+.parameters-table .ant-table-body::-webkit-scrollbar { width: 12px; height: 12px; }
+.parameters-table .ant-table-body::-webkit-scrollbar-track { border: 1px solid #ededed; background: #fafafa; }
+.parameters-table .ant-table-body::-webkit-scrollbar-thumb { min-width: 72px; border: 3px solid #fafafa; border-radius: 6px; background: #bfbfbf; }
+.parameters-table .ant-table-body::-webkit-scrollbar-corner { background: #fafafa; }
+.discount-pagination { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-top: 1px solid #e1e2e3; font-size: 14px; }
+.discount-pagination > b { font-weight: 500; }
+.discount-pagination > div { display: flex; gap: 0; }
+.discount-pagination button { min-width: 32px; height: 32px; padding: 0 8px; border: 0; border-radius: 8px; color: #1a1b1c; background: #fff; cursor: pointer; }
+.discount-pagination button.active { background: #ebf5fd; }
+.discount-pagination button:disabled { color: #adafb1; }
 .compact .ant-table.ant-table-small .ant-table-tbody > tr > td { height: 45px; padding-top: 4px; padding-bottom: 4px; }
 .filter-icon, .ant-table-thead .anticon-search { float: right; margin-top: 4px; font-size: 11px; color: rgba(0,0,0,.25); }
 .blue-dot { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #1890ff; vertical-align: 2px; }
