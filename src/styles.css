@@ -31,8 +31,11 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .filter-chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px; border: 1px solid #91d5ff; border-radius: 2px; color: #1890ff; background: #e6f7ff; font-size: 13px; cursor: pointer; }
 .filter-chip .anticon { font-size: 10px; }
 .reset-filters { display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; color: #1890ff; background: transparent; font-size: 14px; cursor: pointer; }
-.selection { color: #1890ff; font-size: 13px; }
 .table-wrap { height: calc(100vh - 275px); overflow: hidden; border-top: 1px solid #f0f0f0; }
+.bulk-actions { position: fixed; right: 0; bottom: 0; left: 0; z-index: 1000; height: 64px; padding: 4px 24px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; border-top: 1px solid #f0f0f0; background: #fff; box-shadow: 0 -1px 4px rgba(0,0,0,.04); }
+.bulk-actions > span { margin-right: 0; color: rgba(0,0,0,.45); font-size: 14px; line-height: 22px; }
+.bulk-actions .ant-btn { border-radius: 2px; }
+.bulk-actions .bulk-more { width: 34px; padding: 4px 8px; border-color: #40a9ff; color: rgba(0,0,0,.85); }
 .ant-table { font-size: 14px; }
 .ant-table.ant-table-small .ant-table-thead > tr > th { height: 51px; padding: 8px 9px; background: #fafafa; color: rgba(0,0,0,.45); font-weight: 500; line-height: 18px; }
 .ant-table.ant-table-small .ant-table-thead > tr:first-child > th[rowspan='2'] { height: 102px; }
