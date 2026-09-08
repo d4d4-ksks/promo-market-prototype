@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined,
+  AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
   DownloadOutlined, EllipsisOutlined, EnvironmentOutlined, FileTextOutlined, FilterFilled, FilterOutlined,
-  InboxOutlined, InfoCircleFilled, LeftOutlined, MenuFoldOutlined, PercentageOutlined, PlusOutlined,
+  InboxOutlined, InfoCircleFilled, LeftOutlined, MenuFoldOutlined, PercentageOutlined, PlayCircleOutlined, PlusOutlined,
   QuestionCircleOutlined, RightOutlined, SearchOutlined, SettingOutlined, SlidersOutlined, SyncOutlined, UploadOutlined,
 } from '@ant-design/icons';
 
@@ -102,7 +102,7 @@ function App() {
     { title: 'Конкуренты', children: [
       { title: '1 эш., ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
       { title: 'PI 1 эш.', dataIndex: 'pi1', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
-      { title: '2 эш., ₽', dataIndex: 'competitorPrice2', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
+      { title: '2 эш., ₽', dataIndex: 'competitorPrice2', width: 126, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
       { title: 'PI 2 эш.', dataIndex: 'pi2', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice2); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
@@ -213,17 +213,23 @@ function App() {
         {pi1Filters.length > 0 && <button className="filter-chip" onClick={() => setPi1Filters([])}>PI 1 эш. ({pi1Filters.length}) <CloseOutlined /></button>}
         {pi2Filters.length > 0 && <button className="filter-chip" onClick={() => setPi2Filters([])}>PI 2 эш. ({pi2Filters.length}) <CloseOutlined /></button>}
         {(authorFilter || pi1Filters.length > 0 || pi2Filters.length > 0) && <button className="reset-filters" onClick={() => { setAuthorFilter(false); setPi1Filters([]); setPi2Filters([]); }}><CloseOutlined /> Сбросить все фильтры</button>}
-        {selected.length > 0 && <span className="selection">Выбрано: {selected.length}</span>}
       </div>
     </section>
 
     <main className="table-wrap">
       <Table<Promo>
         size="small" columns={columns} dataSource={filteredData} pagination={false}
-        scroll={{ x: 5468, y: 'calc(100vh - 337px)' }}
+        scroll={{ x: 5434, y: 'calc(100vh - 337px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
-    </main></> : <div className="discount-layout">
+    </main>
+    {selected.length > 0 && <div className="bulk-actions">
+      <span>Выбрано {selected.length} промо</span>
+      <Button type="primary" icon={<EditOutlined />} onClick={() => notify(`Редактировать ${selected.length} промо`)}>Редактировать ({selected.length})</Button>
+      <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => notify(`Запустить ${selected.length} промо`)}>Запустить ({selected.length})</Button>
+      <Button className="bulk-more" icon={<EllipsisOutlined />} onClick={() => notify(`Другие действия для ${selected.length} промо`)} aria-label="Другие массовые действия" />
+    </div>}
+    </> : <div className="discount-layout">
       <aside className="discount-sidebar">
         <div className="discount-brand"><span className="discount-logo"><img src="./logo.svg" alt="" /></span><b>Промотрон</b></div>
         <div className="discount-menu">
