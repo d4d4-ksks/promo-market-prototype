@@ -296,12 +296,15 @@ function App() {
       title={<div className="drawer-title"><Button type="text" icon={<CloseOutlined />} onClick={() => setCompetitorPromo(null)} aria-label="Закрыть" /><span>{competitorPromo?.name}</span></div>}
     >
       <div className="competitor-list">
-        {['1 эшелон', 'Пятёрочка', 'Магнит', '2 эшелон', 'Озон', 'Лавка'].map((market, index) => {
-          const tier = market.includes('эшелон');
-          const basePrice = Number(competitorPromo?.competitorPrice ?? 260);
-          const price = Math.max(1, Math.round(basePrice + [-7, -12, -3, 5, 2, 9][index]));
+        {[
+          { market: '1 эшелон', tier: 1, offset: 0 }, { market: 'Пятёрочка', tier: 1, offset: -5 }, { market: 'Магнит', tier: 1, offset: 4 },
+          { market: '2 эшелон', tier: 2, offset: 0 }, { market: 'Озон', tier: 2, offset: -3 }, { market: 'Лавка', tier: 2, offset: 6 },
+        ].map(({ market, tier, offset }) => {
+          const tierRow = market.includes('эшелон');
+          const basePrice = Number(tier === 1 ? competitorPromo?.competitorPrice : competitorPromo?.competitorPrice2) || 260;
+          const price = Math.max(1, Math.round(basePrice + offset));
           const pi = competitorPromo ? piFor(competitorPromo.salePromo, price) : '1,06';
-          return <div className={tier ? 'competitor-row tier-row' : 'competitor-row'} key={market}>
+          return <div className={tierRow ? 'competitor-row tier-row' : 'competitor-row'} key={market}>
             <span>{market}</span><span>{price} ₽</span><Tag color={piTone(pi)}>{pi}</Tag><span>29.08.26</span>
           </div>;
         })}
