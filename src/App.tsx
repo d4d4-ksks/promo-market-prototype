@@ -38,7 +38,8 @@ const data: Promo[] = products.map((item, index) => ({
   name: item[1], city: item[2], type: item[3], category: item[4],
   buyPeriod: `${5 + index}.03 – ${5 + index}.05`, buyRegular: `${195 + index * 8},91`, buyPromo: `${164 + index * 7},56`, buyDiscount: `${16 + index % 7},00`,
   salePeriod: `${5 + index}.03 – ${5 + index}.05`, saleRegular: `${683 + index * 13},52`, salePromo: `${642 + index * 12},01`, saleDiscount: `${18 + index % 8},00`,
-  competitorPrice: Math.round((642.01 + index * 12) / [0.98, 1.09, 1.18][index % 3]), kvi: index % 3 ? '—' : 'KVI',
+  competitorPrice: Math.round((642.01 + index * 12) / [0.98, 1.09, 1.18][index % 3]),
+  competitorPrice2: Math.round((642.01 + index * 12) / [1.03, 1.12, 1.19][index % 3]), kvi: index % 3 ? '—' : 'KVI',
   regularPrice: index % 4 ? 'Да' : 'Нет', matrix: index % 5 ? 'Да' : 'Нет',
   marginPromo: `${15 + index % 4}`, marginRegular: `${10 + index % 5}`, marginFront: `${20 + index % 6}`, marginBack: `${15 + index % 3}`,
   investmentSupplier: `${70 - index % 6}`, investmentSamokat: `${30 + index % 6}`,
@@ -64,15 +65,19 @@ function App() {
   const [authorFilter, setAuthorFilter] = useState(true);
   const [competitorPromo, setCompetitorPromo] = useState<Promo | null>(null);
   const [filtersVisible, setFiltersVisible] = useState(false);
-  const [piOpen, setPiOpen] = useState(false);
-  const [piFilters, setPiFilters] = useState<string[]>([]);
+  const [pi1Open, setPi1Open] = useState(false);
+  const [pi2Open, setPi2Open] = useState(false);
+  const [pi1Filters, setPi1Filters] = useState<string[]>([]);
+  const [pi2Filters, setPi2Filters] = useState<string[]>([]);
   const [draftAuthorFilter, setDraftAuthorFilter] = useState(true);
-  const [draftPiFilters, setDraftPiFilters] = useState<string[]>([]);
+  const [draftPi1Filters, setDraftPi1Filters] = useState<string[]>([]);
+  const [draftPi2Filters, setDraftPi2Filters] = useState<string[]>([]);
 
-  const filteredData = useMemo(() => piFilters.length === 0 ? data : data.filter(record => {
-    const tone = piTone(piFor(record.salePromo, record.competitorPrice));
-    return piFilters.includes(tone);
-  }), [piFilters]);
+  const filteredData = useMemo(() => data.filter(record => {
+    const pi1Matches = pi1Filters.length === 0 || pi1Filters.includes(piTone(piFor(record.salePromo, record.competitorPrice)));
+    const pi2Matches = pi2Filters.length === 0 || pi2Filters.includes(piTone(piFor(record.salePromo, record.competitorPrice2)));
+    return pi1Matches && pi2Matches;
+  }), [pi1Filters, pi2Filters]);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
     { title: '', width: 40, fixed: 'left', render: () => <span className="validation-dot" /> },
@@ -95,8 +100,10 @@ function App() {
       { title: 'Скидка, %', dataIndex: 'saleDiscount', width: 92, align: 'right' },
     ]},
     { title: 'Конкуренты', children: [
-      { title: 'Цена, ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
-      { title: 'PI', dataIndex: 'pi', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
+      { title: '1 эш., ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
+      { title: 'PI 1 эш.', dataIndex: 'pi1', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
+      { title: '2 эш., ₽', dataIndex: 'competitorPrice2', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
+      { title: 'PI 2 эш.', dataIndex: 'pi2', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice2); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
     { title: 'Рег. прайс', dataIndex: 'regularPrice', width: 110 },
@@ -149,13 +156,15 @@ function App() {
   const notify = (text: string) => message.info(`${text} — демо-действие`);
   const openFilters = () => {
     setDraftAuthorFilter(authorFilter);
-    setDraftPiFilters(piFilters);
+    setDraftPi1Filters(pi1Filters);
+    setDraftPi2Filters(pi2Filters);
     setFiltersVisible(true);
   };
   const closeFilters = () => setFiltersVisible(false);
   const applyFilters = () => {
     setAuthorFilter(draftAuthorFilter);
-    setPiFilters(draftPiFilters);
+    setPi1Filters(draftPi1Filters);
+    setPi2Filters(draftPi2Filters);
     setFiltersVisible(false);
   };
   const actions = <Menu items={[{ key: 'archive', label: 'Архив промо' }, { key: 'template', label: 'Скачать шаблон' }]} onClick={({key}) => notify(key === 'archive' ? 'Архив промо' : 'Скачать шаблон')} />;
@@ -196,13 +205,14 @@ function App() {
           <Button type="link" icon={<SettingOutlined />} onClick={() => notify('Настроить выгрузку')}>Настроить выгрузку</Button>
           <span className="export-limit">80/80</span>
           <Button icon={<FilterOutlined />} className="filter-button" onClick={openFilters}>Фильтры</Button>
-          {(authorFilter || piFilters.length > 0) && <span className="filter-badge">{Number(authorFilter) + Number(piFilters.length > 0)}</span>}
+          {(authorFilter || pi1Filters.length > 0 || pi2Filters.length > 0) && <span className="filter-badge">{Number(authorFilter) + Number(pi1Filters.length > 0) + Number(pi2Filters.length > 0)}</span>}
         </div>
       </div>
       <div className="active-filters">
         {authorFilter && <button className="filter-chip" onClick={() => setAuthorFilter(false)}>Автор (1) <CloseOutlined /></button>}
-        {piFilters.length > 0 && <button className="filter-chip" onClick={() => setPiFilters([])}>PI ({piFilters.length}) <CloseOutlined /></button>}
-        {(authorFilter || piFilters.length > 0) && <button className="reset-filters" onClick={() => { setAuthorFilter(false); setPiFilters([]); }}><CloseOutlined /> Сбросить все фильтры</button>}
+        {pi1Filters.length > 0 && <button className="filter-chip" onClick={() => setPi1Filters([])}>PI 1 эш. ({pi1Filters.length}) <CloseOutlined /></button>}
+        {pi2Filters.length > 0 && <button className="filter-chip" onClick={() => setPi2Filters([])}>PI 2 эш. ({pi2Filters.length}) <CloseOutlined /></button>}
+        {(authorFilter || pi1Filters.length > 0 || pi2Filters.length > 0) && <button className="reset-filters" onClick={() => { setAuthorFilter(false); setPi1Filters([]); setPi2Filters([]); }}><CloseOutlined /> Сбросить все фильтры</button>}
         {selected.length > 0 && <span className="selection">Выбрано: {selected.length}</span>}
       </div>
     </section>
@@ -210,7 +220,7 @@ function App() {
     <main className="table-wrap">
       <Table<Promo>
         size="small" columns={columns} dataSource={filteredData} pagination={false}
-        scroll={{ x: 5216, y: 'calc(100vh - 337px)' }}
+        scroll={{ x: 5468, y: 'calc(100vh - 337px)' }}
         rowSelection={{ selectedRowKeys: selected, onChange: setSelected, columnWidth: 48 }}
       />
     </main></> : <div className="discount-layout">
@@ -252,14 +262,22 @@ function App() {
       onClose={closeFilters}
       className="filters-drawer"
       title={<div className="filters-title"><Button type="text" icon={<CloseOutlined />} onClick={closeFilters} aria-label="Закрыть фильтры" /><b>Фильтры</b></div>}
-      footer={<div className="filters-footer"><Button onClick={() => { setDraftAuthorFilter(false); setDraftPiFilters([]); }}>Сбросить все фильтры</Button><Button type="primary" onClick={applyFilters}>Применить</Button></div>}
+      footer={<div className="filters-footer"><Button onClick={() => { setDraftAuthorFilter(false); setDraftPi1Filters([]); setDraftPi2Filters([]); }}>Сбросить все фильтры</Button><Button type="primary" onClick={applyFilters}>Применить</Button></div>}
     >
       <div className="filter-list">
         <div className="filter-item author-filter"><span>Автор</span>{draftAuthorFilter && <><span className="author-count">1</span><button onClick={() => setDraftAuthorFilter(false)}>сбросить</button></>}<DownOutlined /></div>
         {['Статус', 'Промо id', 'Ошибки и предупреждения', 'Организация', 'Наименование', 'Период продажи'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
-        <div className={`filter-item pi-filter ${piOpen ? 'open' : ''}`}>
-          <button className="filter-item-heading" onClick={() => setPiOpen(value => !value)}><span>PI</span><DownOutlined /></button>
-          {piOpen && <Checkbox.Group value={draftPiFilters} onChange={values => setDraftPiFilters(values as string[])}>
+        <div className={`filter-item pi-filter ${pi1Open ? 'open' : ''}`}>
+          <button className="filter-item-heading" onClick={() => setPi1Open(value => !value)}><span>PI 1 эш.</span><DownOutlined /></button>
+          {pi1Open && <Checkbox.Group value={draftPi1Filters} onChange={values => setDraftPi1Filters(values as string[])}>
+            <Checkbox value="green">Равен целевому</Checkbox>
+            <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
+            <Checkbox value="red">Значительно отличается от целевого</Checkbox>
+          </Checkbox.Group>}
+        </div>
+        <div className={`filter-item pi-filter ${pi2Open ? 'open' : ''}`}>
+          <button className="filter-item-heading" onClick={() => setPi2Open(value => !value)}><span>PI 2 эш.</span><DownOutlined /></button>
+          {pi2Open && <Checkbox.Group value={draftPi2Filters} onChange={values => setDraftPi2Filters(values as string[])}>
             <Checkbox value="green">Равен целевому</Checkbox>
             <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
             <Checkbox value="red">Значительно отличается от целевого</Checkbox>
@@ -278,10 +296,10 @@ function App() {
       title={<div className="drawer-title"><Button type="text" icon={<CloseOutlined />} onClick={() => setCompetitorPromo(null)} aria-label="Закрыть" /><span>{competitorPromo?.name}</span></div>}
     >
       <div className="competitor-list">
-        {['1 эшелон', 'Пятёрочка', 'Магнит', '2 эшелон', 'Озон', 'Лавка', '3 эшелон', 'Лента', 'Перекрёсток'].map((market, index) => {
+        {['1 эшелон', 'Пятёрочка', 'Магнит', '2 эшелон', 'Озон', 'Лавка'].map((market, index) => {
           const tier = market.includes('эшелон');
           const basePrice = Number(competitorPromo?.competitorPrice ?? 260);
-          const price = Math.max(1, Math.round(basePrice + [-7, -12, -3, 5, 2, 9, 14, 11, 18][index]));
+          const price = Math.max(1, Math.round(basePrice + [-7, -12, -3, 5, 2, 9][index]));
           const pi = competitorPromo ? piFor(competitorPromo.salePromo, price) : '1,06';
           return <div className={tier ? 'competitor-row tier-row' : 'competitor-row'} key={market}>
             <span>{market}</span><span>{price} ₽</span><Tag color={piTone(pi)}>{pi}</Tag><span>29.08.26</span>
