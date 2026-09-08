@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag } from 'antd';
+import { Button, Checkbox, Drawer, Dropdown, Menu, message, notification, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
@@ -168,6 +168,21 @@ function App() {
     setFiltersVisible(false);
   };
   const actions = <Menu items={[{ key: 'archive', label: 'Архив промо' }, { key: 'template', label: 'Скачать шаблон' }]} onClick={({key}) => notify(key === 'archive' ? 'Архив промо' : 'Скачать шаблон')} />;
+  const bulkActions = <Menu
+    className="bulk-actions-menu"
+    selectable={false}
+    items={[
+      { key: 'pricing', label: `В Проставление промо цен (${selected.length})` },
+      { key: 'cancel', label: `Отменить (${selected.length})` },
+      { key: 'check', label: `Проверить рег. вх. цены (${selected.length})` },
+      { key: 'competitors', label: `Обновить цены конкурентов (${selected.length})` },
+    ]}
+    onClick={({ key }) => {
+      if (key !== 'competitors') return;
+      setSelected([]);
+      notification.success({ message: 'Цены конкурентов обновлены', placement: 'topRight', top: 47, duration: 4 });
+    }}
+  />;
 
   return <div className="app-shell">
     {page === 'promo' && <header className="global-header">
@@ -227,7 +242,9 @@ function App() {
       <span>Выбрано {selected.length} промо</span>
       <Button type="primary" icon={<EditOutlined />} onClick={() => notify(`Редактировать ${selected.length} промо`)}>Редактировать ({selected.length})</Button>
       <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => notify(`Запустить ${selected.length} промо`)}>Запустить ({selected.length})</Button>
-      <Button className="bulk-more" icon={<EllipsisOutlined />} onClick={() => notify(`Другие действия для ${selected.length} промо`)} aria-label="Другие массовые действия" />
+      <Dropdown overlay={bulkActions} trigger={['click']} placement="topRight">
+        <Button className="bulk-more" icon={<EllipsisOutlined />} aria-label="Другие массовые действия" />
+      </Dropdown>
     </div>}
     </> : <div className="discount-layout">
       <aside className="discount-sidebar">
