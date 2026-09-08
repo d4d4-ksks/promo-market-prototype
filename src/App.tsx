@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Drawer, Dropdown, Menu, message, notification, Table, Tag } from 'antd';
+import { Button, Checkbox, Drawer, Dropdown, Menu, message, notification, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
@@ -32,6 +32,10 @@ const piTone = (value: string) => {
   const numeric = numberFrom(value);
   return numeric <= 1.05 ? 'green' : numeric < 1.15 ? 'gold' : 'red';
 };
+
+const PiWarningIcon = () => <svg className="pi-warning-icon" width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M14.9327 16.375L8.43272 5.125C8.33584 4.95781 8.16866 4.875 7.99991 4.875C7.83116 4.875 7.66241 4.95781 7.56709 5.125L1.0671 16.375C0.874908 16.7094 1.11553 17.125 1.49991 17.125H14.4999C14.8843 17.125 15.1249 16.7094 14.9327 16.375ZM7.49991 9.5C7.49991 9.43125 7.55616 9.375 7.62491 9.375H8.37491C8.44366 9.375 8.49991 9.43125 8.49991 9.5V12.375C8.49991 12.4438 8.44366 12.5 8.37491 12.5H7.62491C7.55616 12.5 7.49991 12.4438 7.49991 12.375V9.5ZM7.99991 15C7.80365 14.996 7.61677 14.9152 7.47939 14.775C7.34201 14.6348 7.26506 14.4463 7.26506 14.25C7.26506 14.0537 7.34201 13.8652 7.47939 13.725C7.61677 13.5848 7.80365 13.504 7.99991 13.5C8.19617 13.504 8.38304 13.5848 8.52042 13.725C8.65781 13.8652 8.73475 14.0537 8.73475 14.25C8.73475 14.4463 8.65781 14.6348 8.52042 14.775C8.38304 14.9152 8.19617 14.996 7.99991 15V15Z" fill="#FAAD14" />
+</svg>;
 
 const data: Promo[] = products.map((item, index) => ({
   key: index + 1, promo: item[0], status: index === 3 ? 'Ожидает согласования' : 'Проставление промоцен',
@@ -80,7 +84,7 @@ function App() {
   }), [pi1Filters, pi2Filters]);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
-    { title: '', width: 40, fixed: 'left', render: () => <span className="validation-dot" /> },
+    { title: '', width: 40, fixed: 'left', render: (_value, record) => piTone(piFor(record.salePromo, record.competitorPrice)) === 'red' ? <Tooltip title="PI 1 эшелона значительно отличается от целевого" trigger="click" placement="topLeft" overlayClassName="pi-warning-tooltip"><button className="pi-warning-button" aria-label="Предупреждение: PI 1 эшелона значительно отличается от целевого"><PiWarningIcon /></button></Tooltip> : null },
     { title: <span>Промо <SearchOutlined /></span>, dataIndex: 'promo', width: 100, fixed: 'left', render: value => <a>{value}</a> },
     { title: <span>Статус {icon}</span>, dataIndex: 'status', width: 210, fixed: 'left', render: value => <span><i className="blue-dot" />{value}</span> },
     { title: <span>Наименование <SearchOutlined /></span>, dataIndex: 'name', width: 240, fixed: 'left', ellipsis: true },
