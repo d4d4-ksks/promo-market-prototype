@@ -106,7 +106,11 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .compact .ant-table.ant-table-small .ant-table-tbody > tr > td { height: 45px; padding-top: 4px; padding-bottom: 4px; }
 .filter-icon, .ant-table-thead .anticon-search { float: right; margin-top: 4px; font-size: 11px; color: rgba(0,0,0,.25); }
 .blue-dot { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #1890ff; vertical-align: 2px; }
-.validation-dot { display: block; width: 5px; height: 5px; border-radius: 50%; background: #52c41a; margin: auto; }
+.pi-warning-button { display: flex; width: 100%; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.pi-warning-icon { display: block; }
+.pi-warning-tooltip { max-width: 430px; }
+.pi-warning-tooltip .ant-tooltip-inner { min-width: 360px; padding: 16px 20px; border-radius: 0; background: #fff; color: rgba(0,0,0,.85); font-size: 16px; line-height: 26px; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05); }
+.pi-warning-tooltip.ant-tooltip-placement-topLeft .ant-tooltip-arrow-content { background: #fff; }
 .muted { color: rgba(0,0,0,.45); }
 .ant-btn { border-radius: 2px; }
 .competitor-price { display: block; width: 100%; padding: 0; border: 0; color: inherit; background: transparent; text-align: right; cursor: pointer; }
