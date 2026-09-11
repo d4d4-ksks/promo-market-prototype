@@ -38,6 +38,14 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .bulk-actions .bulk-more { width: 34px; padding: 4px 8px; border-color: #40a9ff; color: rgba(0,0,0,.85); }
 .bulk-actions-menu { min-width: 282px; padding: 8px 0; border-radius: 2px; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05); }
 .bulk-actions-menu .ant-dropdown-menu-item { min-height: 40px; padding: 9px 16px; font-size: 14px; line-height: 22px; }
+.heading-more { border-color: #40a9ff; color: #1890ff; }
+.promo-actions-menu { min-width: 187px; padding: 4px 0; border-radius: 2px; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05); }
+.promo-actions-menu .ant-dropdown-menu-item { min-height: 32px; padding: 5px 12px; font-size: 14px; line-height: 22px; }
+.promo-actions-menu .ant-dropdown-menu-item-divider { height: 8px; margin: 0; border-top: 1px solid #f0f0f0; background: #fff; }
+.promo-actions-menu .ant-dropdown-menu-item-icon { min-width: 12px; margin-right: 8px; font-size: 12px; }
+.promo-actions-menu .ant-dropdown-menu-item-disabled { cursor: default; }
+.promo-actions-menu .ant-dropdown-menu-item-disabled:hover { background: #fff; }
+.promo-actions-heading { color: rgba(0,0,0,.45); }
 .ant-notification-topRight { margin-right: 0; }
 .ant-notification-notice { border-radius: 0; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05); }
 .ant-table { font-size: 14px; }
