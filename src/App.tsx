@@ -171,7 +171,27 @@ function App() {
     setPi2Filters(draftPi2Filters);
     setFiltersVisible(false);
   };
-  const actions = <Menu items={[{ key: 'archive', label: 'Архив промо' }, { key: 'template', label: 'Скачать шаблон' }]} onClick={({key}) => notify(key === 'archive' ? 'Архив промо' : 'Скачать шаблон')} />;
+  const actions = <Menu
+    className="promo-actions-menu"
+    selectable={false}
+    items={[
+      { key: 'adjust', label: 'Внести корректировку' },
+      { key: 'boosts', label: 'Загрузить усиления' },
+      { type: 'divider' },
+      { key: 'target-pi', icon: <UploadOutlined />, label: 'Загрузить целевые PI' },
+      { type: 'divider' },
+      { key: 'schedule-heading', label: <span className="promo-actions-heading">График поставок</span>, disabled: true },
+      { key: 'schedule-upload', icon: <UploadOutlined />, label: 'Загрузить' },
+      { key: 'schedule-download', icon: <DownloadOutlined />, label: 'Скачать' },
+    ]}
+    onClick={({ key }) => {
+      const labels: Record<string, string> = {
+        adjust: 'Внести корректировку', boosts: 'Загрузить усиления', 'target-pi': 'Загрузить целевые PI',
+        'schedule-upload': 'Загрузить график поставок', 'schedule-download': 'Скачать график поставок',
+      };
+      if (labels[key]) notify(labels[key]);
+    }}
+  />;
   const bulkActions = <Menu
     className="bulk-actions-menu"
     selectable={false}
@@ -208,7 +228,7 @@ function App() {
       <h1>Промо</h1>
       <div className="heading-actions">
         <Button type="primary" icon={<UploadOutlined />} onClick={() => notify('Загрузить промоплан')}>Загрузить промоплан</Button>
-        <Dropdown overlay={actions} trigger={['click']}><Button icon={<EllipsisOutlined />} /></Dropdown>
+        <Dropdown overlay={actions} trigger={['click']} placement="bottomRight"><Button className="heading-more" icon={<EllipsisOutlined />} aria-label="Другие действия с промо" /></Dropdown>
       </div>
     </section>
 
