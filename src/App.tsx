@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Drawer, Dropdown, Menu, message, notification, Table, Tag, Tooltip } from 'antd';
+import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   AppstoreOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
@@ -178,7 +178,7 @@ function App() {
       { key: 'adjust', label: 'Внести корректировку' },
       { key: 'boosts', label: 'Загрузить усиления' },
       { type: 'divider' },
-      { key: 'target-pi', icon: <UploadOutlined />, label: 'Загрузить целевые PI' },
+      { key: 'competitor-download', icon: <DownloadOutlined />, label: 'Скачать цены конкурентов' },
       { type: 'divider' },
       { key: 'schedule-heading', label: <span className="promo-actions-heading">График поставок</span>, disabled: true },
       { key: 'schedule-upload', icon: <UploadOutlined />, label: 'Загрузить' },
@@ -186,7 +186,7 @@ function App() {
     ]}
     onClick={({ key }) => {
       const labels: Record<string, string> = {
-        adjust: 'Внести корректировку', boosts: 'Загрузить усиления', 'target-pi': 'Загрузить целевые PI',
+        adjust: 'Внести корректировку', boosts: 'Загрузить усиления',
         'schedule-upload': 'Загрузить график поставок', 'schedule-download': 'Скачать график поставок',
       };
       if (labels[key]) notify(labels[key]);
@@ -199,13 +199,7 @@ function App() {
       { key: 'pricing', label: `В Проставление промо цен (${selected.length})` },
       { key: 'cancel', label: `Отменить (${selected.length})` },
       { key: 'check', label: `Проверить рег. вх. цены (${selected.length})` },
-      { key: 'competitors', label: `Обновить цены конкурентов (${selected.length})` },
     ]}
-    onClick={({ key }) => {
-      if (key !== 'competitors') return;
-      setSelected([]);
-      notification.success({ message: 'Цены конкурентов обновлены', placement: 'topRight', top: 47, duration: 4 });
-    }}
   />;
 
   return <div className="app-shell">
