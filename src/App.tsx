@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Drawer, Dropdown, Menu, message, Table, Tag, Tooltip } from 'antd';
+import { Button, Checkbox, Drawer, Dropdown, Menu, message, Modal, notification, Select, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   AppstoreOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
@@ -23,6 +23,16 @@ const products = [
   ['300097', 'Корм для кошек Pro Plan | индейка, 85 г', 'Тула', 'Мультибай', 'Зоотовары'],
   ['300096', 'Средство для стирки BioMio | Bio Color, 1,5 л', 'Омск', 'Скидка', 'Уход за домом'],
   ['300095', 'Батончик Bombbar | шоколад-фундук, 60 г', 'Москва', 'Скидка', 'Здоровое питание'],
+];
+
+const competitorPriceCategories = [
+  'Автомобильные товары и запчасти',
+  'Бакалея',
+  'Безалкогольные напитки',
+  'Бытовая техника и электроника',
+  'Бытовая химия',
+  'Гигиена',
+  'Детская гигиена и уход',
 ];
 
 const numberFrom = (value: string | number) => Number(String(value).replace(',', '.').replace(/[^\d.-]/g, ''));
@@ -74,6 +84,8 @@ function App() {
   const [draftAuthorFilter, setDraftAuthorFilter] = useState(true);
   const [draftPi1Filters, setDraftPi1Filters] = useState<string[]>([]);
   const [draftPi2Filters, setDraftPi2Filters] = useState<string[]>([]);
+  const [priceExportVisible, setPriceExportVisible] = useState(false);
+  const [priceExportCategories, setPriceExportCategories] = useState<string[]>([]);
 
   const filteredData = useMemo(() => data.filter(record => {
     const pi1 = piFor(record.salePromo, record.competitorPrice);
@@ -185,6 +197,10 @@ function App() {
       { key: 'schedule-download', icon: <DownloadOutlined />, label: 'Скачать' },
     ]}
     onClick={({ key }) => {
+      if (key === 'competitor-download') {
+        setPriceExportVisible(true);
+        return;
+      }
       const labels: Record<string, string> = {
         adjust: 'Внести корректировку', boosts: 'Загрузить усиления',
         'schedule-upload': 'Загрузить график поставок', 'schedule-download': 'Скачать график поставок',
@@ -192,6 +208,22 @@ function App() {
       if (labels[key]) notify(labels[key]);
     }}
   />;
+
+  const closePriceExport = () => {
+    setPriceExportVisible(false);
+    setPriceExportCategories([]);
+  };
+
+  const downloadCompetitorPrices = () => {
+    if (priceExportCategories.length === 0) return;
+    closePriceExport();
+    notification.success({
+      message: 'Цены конкурентов скачаны',
+      description: `Категорий: ${priceExportCategories.length}`,
+      placement: 'topRight',
+      duration: 4,
+    });
+  };
   const bulkActions = <Menu
     className="bulk-actions-menu"
     selectable={false}
@@ -327,6 +359,31 @@ function App() {
         {['Вид промо', 'Тип промо', 'Матрица', 'Категория', 'Период закупки', 'Кампания', 'Маржа комм. промо', 'Способ компенсации', 'Тип суперпромо', 'Эксп. коэф. суперпромо', 'Премия', 'Продажа: скидка', 'Поставщик', 'Рег. прайс', 'Маржа: комм. рег', 'Маржа: фронт рег.', 'Маржа: бэк рег.', 'Инвестиции поставщика', 'Инвестиции самоката', 'Сумма комп. OFF', 'ТО: коэф. эласт.', 'ТО: прогноз рег.', 'ТО: прогноз акц.', 'В распродаже', 'Номер заявки'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
       </div>
     </Drawer>
+    <Modal
+      visible={priceExportVisible}
+      title="Выгрузка цен конкурентов"
+      width={600}
+      className="price-export-modal"
+      onCancel={closePriceExport}
+      footer={[
+        <Button key="cancel" onClick={closePriceExport}>Отменить</Button>,
+        <Button key="download" type="primary" disabled={priceExportCategories.length === 0} onClick={downloadCompetitorPrices}>Скачать</Button>,
+      ]}
+    >
+      <label className="price-export-label" htmlFor="price-export-categories">Категория 1</label>
+      <Select
+        id="price-export-categories"
+        mode="multiple"
+        value={priceExportCategories}
+        onChange={setPriceExportCategories}
+        placeholder="Выберите Категорию 1"
+        maxTagCount={3}
+        maxTagTextLength={24}
+        optionFilterProp="label"
+        className="price-export-select"
+        options={competitorPriceCategories.map(category => ({ label: category, value: category }))}
+      />
+    </Modal>
     <Drawer
       width={360}
       placement="right"

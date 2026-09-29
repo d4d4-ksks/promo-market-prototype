@@ -48,6 +48,15 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .promo-actions-heading { color: rgba(0,0,0,.45); }
 .ant-notification-topRight { margin-right: 0; }
 .ant-notification-notice { border-radius: 0; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05); }
+.price-export-modal .ant-modal-content { border-radius: 2px; overflow: hidden; }
+.price-export-modal .ant-modal-header { padding: 16px 24px; border-bottom-color: #f0f0f0; }
+.price-export-modal .ant-modal-title { font-size: 16px; font-weight: 500; line-height: 24px; }
+.price-export-modal .ant-modal-close-x { width: 56px; height: 56px; line-height: 56px; }
+.price-export-modal .ant-modal-body { min-height: 134px; padding: 24px; }
+.price-export-modal .ant-modal-footer { padding: 10px 16px; border-top-color: #f0f0f0; }
+.price-export-label { display: block; margin-bottom: 8px; color: rgba(0,0,0,.85); font-size: 14px; line-height: 22px; }
+.price-export-select { width: 100%; }
+.price-export-select.ant-select-multiple .ant-select-selection-item { max-width: 180px; border-radius: 2px; }
 .ant-table { font-size: 14px; }
 .ant-table.ant-table-small .ant-table-thead > tr > th { height: 51px; padding: 8px 9px; background: #fafafa; color: rgba(0,0,0,.45); font-weight: 500; line-height: 18px; }
 .ant-table.ant-table-small .ant-table-thead > tr:first-child > th[rowspan='2'] { height: 102px; }
