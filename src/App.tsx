@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Button, Checkbox, Drawer, Dropdown, Menu, message, notification, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  AppstoreOutlined, ArrowRightOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
+  AppstoreOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
   DownloadOutlined, EllipsisOutlined, EnvironmentOutlined, FileTextOutlined, FilterFilled, FilterOutlined,
   InboxOutlined, InfoCircleFilled, LeftOutlined, MenuFoldOutlined, PercentageOutlined, PlayCircleOutlined, PlusOutlined,
   QuestionCircleOutlined, RightOutlined, SearchOutlined, SettingOutlined, SlidersOutlined, SyncOutlined, UploadOutlined,
@@ -26,24 +26,22 @@ const products = [
 ];
 
 const numberFrom = (value: string | number) => Number(String(value).replace(',', '.').replace(/[^\d.-]/g, ''));
-const piFor = (promoPrice: string | number, competitorPrice: string | number) =>
-  (numberFrom(promoPrice) / numberFrom(competitorPrice)).toFixed(2).replace('.', ',');
+const piFor = (promoPrice: string | number, competitorPrice: string | number) => {
+  const price = numberFrom(competitorPrice);
+  return price > 0 ? (numberFrom(promoPrice) / price).toFixed(2).replace('.', ',') : '';
+};
 const piTone = (value: string) => {
   const numeric = numberFrom(value);
   return numeric <= 1.05 ? 'green' : numeric < 1.15 ? 'gold' : 'red';
 };
-
-const PiWarningIcon = () => <svg className="pi-warning-icon" width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M14.9327 16.375L8.43272 5.125C8.33584 4.95781 8.16866 4.875 7.99991 4.875C7.83116 4.875 7.66241 4.95781 7.56709 5.125L1.0671 16.375C0.874908 16.7094 1.11553 17.125 1.49991 17.125H14.4999C14.8843 17.125 15.1249 16.7094 14.9327 16.375ZM7.49991 9.5C7.49991 9.43125 7.55616 9.375 7.62491 9.375H8.37491C8.44366 9.375 8.49991 9.43125 8.49991 9.5V12.375C8.49991 12.4438 8.44366 12.5 8.37491 12.5H7.62491C7.55616 12.5 7.49991 12.4438 7.49991 12.375V9.5ZM7.99991 15C7.80365 14.996 7.61677 14.9152 7.47939 14.775C7.34201 14.6348 7.26506 14.4463 7.26506 14.25C7.26506 14.0537 7.34201 13.8652 7.47939 13.725C7.61677 13.5848 7.80365 13.504 7.99991 13.5C8.19617 13.504 8.38304 13.5848 8.52042 13.725C8.65781 13.8652 8.73475 14.0537 8.73475 14.25C8.73475 14.4463 8.65781 14.6348 8.52042 14.775C8.38304 14.9152 8.19617 14.996 7.99991 15V15Z" fill="#FAAD14" />
-</svg>;
 
 const data: Promo[] = products.map((item, index) => ({
   key: index + 1, promo: item[0], status: index === 3 ? 'Ожидает согласования' : 'Проставление промоцен',
   name: item[1], city: item[2], type: item[3], category: item[4],
   buyPeriod: `${5 + index}.03 – ${5 + index}.05`, buyRegular: `${195 + index * 8},91`, buyPromo: `${164 + index * 7},56`, buyDiscount: `${16 + index % 7},00`,
   salePeriod: `${5 + index}.03 – ${5 + index}.05`, saleRegular: `${683 + index * 13},52`, salePromo: `${642 + index * 12},01`, saleDiscount: `${18 + index % 8},00`,
-  competitorPrice: Math.round((642.01 + index * 12) / [0.98, 1.09, 1.18][index % 3]),
-  competitorPrice2: Math.round((642.01 + index * 12) / [1.03, 1.12, 1.19][index % 3]), kvi: index % 3 ? '—' : 'KVI',
+  competitorPrice: index === 2 ? '—' : Math.round((642.01 + index * 12) / [0.98, 1.09, 1.18][index % 3]),
+  competitorPrice2: index === 2 ? '—' : Math.round((642.01 + index * 12) / [1.03, 1.12, 1.19][index % 3]), kvi: index % 3 ? '—' : 'KVI',
   regularPrice: index % 4 ? 'Да' : 'Нет', matrix: index % 5 ? 'Да' : 'Нет',
   marginPromo: `${15 + index % 4}`, marginRegular: `${10 + index % 5}`, marginFront: `${20 + index % 6}`, marginBack: `${15 + index % 3}`,
   investmentSupplier: `${70 - index % 6}`, investmentSamokat: `${30 + index % 6}`,
@@ -78,13 +76,15 @@ function App() {
   const [draftPi2Filters, setDraftPi2Filters] = useState<string[]>([]);
 
   const filteredData = useMemo(() => data.filter(record => {
-    const pi1Matches = pi1Filters.length === 0 || pi1Filters.includes(piTone(piFor(record.salePromo, record.competitorPrice)));
-    const pi2Matches = pi2Filters.length === 0 || pi2Filters.includes(piTone(piFor(record.salePromo, record.competitorPrice2)));
+    const pi1 = piFor(record.salePromo, record.competitorPrice);
+    const pi2 = piFor(record.salePromo, record.competitorPrice2);
+    const pi1Matches = pi1Filters.length === 0 || Boolean(pi1 && pi1Filters.includes(piTone(pi1)));
+    const pi2Matches = pi2Filters.length === 0 || Boolean(pi2 && pi2Filters.includes(piTone(pi2)));
     return pi1Matches && pi2Matches;
   }), [pi1Filters, pi2Filters]);
 
   const columns = useMemo<ColumnsType<Promo>>(() => [
-    { title: '', width: 40, fixed: 'left', render: (_value, record) => piTone(piFor(record.salePromo, record.competitorPrice)) === 'red' ? <Tooltip title="PI 1 эшелона значительно отличается от целевого" trigger="click" placement="topLeft" overlayClassName="pi-warning-tooltip"><button className="pi-warning-button" aria-label="Предупреждение: PI 1 эшелона значительно отличается от целевого"><PiWarningIcon /></button></Tooltip> : null },
+    { title: '', width: 40, fixed: 'left', render: () => null },
     { title: <span>Промо <SearchOutlined /></span>, dataIndex: 'promo', width: 100, fixed: 'left', render: value => <a>{value}</a> },
     { title: <span>Статус {icon}</span>, dataIndex: 'status', width: 210, fixed: 'left', render: value => <span><i className="blue-dot" />{value}</span> },
     { title: <span>Наименование <SearchOutlined /></span>, dataIndex: 'name', width: 240, fixed: 'left', ellipsis: true },
@@ -104,10 +104,10 @@ function App() {
       { title: 'Скидка, %', dataIndex: 'saleDiscount', width: 92, align: 'right' },
     ]},
     { title: 'Конкуренты', children: [
-      { title: '1 эш., ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
-      { title: 'PI 1 эш.', dataIndex: 'pi1', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
-      { title: '2 эш., ₽', dataIndex: 'competitorPrice2', width: 126, align: 'right', render: (v, record) => <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span><small>(акц. цена)</small></button> },
-      { title: 'PI 2 эш.', dataIndex: 'pi2', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice2); return <Tag color={piTone(pi)}>{pi}</Tag>; } },
+      { title: '1 эш., ₽', dataIndex: 'competitorPrice', width: 160, align: 'right', render: (v, record) => v === '—' ? <Tooltip title="Для этого товара цена конкурентов не доступна" trigger="click" placement="topLeft" overlayClassName="pi-warning-tooltip"><button className="competitor-price unavailable-price"><span className="amount">—</span></button></Tooltip> : <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span></button> },
+      { title: 'PI 1 эш.', dataIndex: 'pi1', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice); return pi ? <Tag color={piTone(pi)}>{pi}</Tag> : null; } },
+      { title: '2 эш., ₽', dataIndex: 'competitorPrice2', width: 126, align: 'right', render: (v, record) => v === '—' ? <Tooltip title="Для этого товара цена конкурентов не доступна" trigger="click" placement="topLeft" overlayClassName="pi-warning-tooltip"><button className="competitor-price unavailable-price"><span className="amount">—</span></button></Tooltip> : <button className="competitor-price" onClick={() => setCompetitorPromo(record)}><span className="amount">{v}</span></button> },
+      { title: 'PI 2 эш.', dataIndex: 'pi2', width: 92, align: 'right', render: (_v, record) => { const pi = piFor(record.salePromo, record.competitorPrice2); return pi ? <Tag color={piTone(pi)}>{pi}</Tag> : null; } },
     ]},
     { title: 'KVI', dataIndex: 'kvi', width: 60 },
     { title: 'Рег. прайс', dataIndex: 'regularPrice', width: 110 },
@@ -317,17 +317,17 @@ function App() {
         <div className={`filter-item pi-filter ${pi1Open ? 'open' : ''}`}>
           <button className="filter-item-heading" onClick={() => setPi1Open(value => !value)}><span>PI 1 эш.</span><DownOutlined /></button>
           {pi1Open && <Checkbox.Group value={draftPi1Filters} onChange={values => setDraftPi1Filters(values as string[])}>
-            <Checkbox value="green">Равен целевому</Checkbox>
-            <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
-            <Checkbox value="red">Значительно отличается от целевого</Checkbox>
+            <Checkbox value="green">Меньше 1</Checkbox>
+            <Checkbox value="gold">От 1 до целевого</Checkbox>
+            <Checkbox value="red">Больше целевого</Checkbox>
           </Checkbox.Group>}
         </div>
         <div className={`filter-item pi-filter ${pi2Open ? 'open' : ''}`}>
           <button className="filter-item-heading" onClick={() => setPi2Open(value => !value)}><span>PI 2 эш.</span><DownOutlined /></button>
           {pi2Open && <Checkbox.Group value={draftPi2Filters} onChange={values => setDraftPi2Filters(values as string[])}>
-            <Checkbox value="green">Равен целевому</Checkbox>
-            <Checkbox value="gold">Незначительно отличается от целевого</Checkbox>
-            <Checkbox value="red">Значительно отличается от целевого</Checkbox>
+            <Checkbox value="green">Меньше 1</Checkbox>
+            <Checkbox value="gold">От 1 до целевого</Checkbox>
+            <Checkbox value="red">Больше целевого</Checkbox>
           </Checkbox.Group>}
         </div>
         {['Вид промо', 'Тип промо', 'Матрица', 'Категория', 'Период закупки', 'Кампания', 'Маржа комм. промо', 'Способ компенсации', 'Тип суперпромо', 'Эксп. коэф. суперпромо', 'Премия', 'Продажа: скидка', 'Поставщик', 'Рег. прайс', 'Маржа: комм. рег', 'Маржа: фронт рег.', 'Маржа: бэк рег.', 'Инвестиции поставщика', 'Инвестиции самоката', 'Сумма комп. OFF', 'ТО: коэф. эласт.', 'ТО: прогноз рег.', 'ТО: прогноз акц.', 'В распродаже', 'Номер заявки'].map(label => <div className="filter-item" key={label}><span>{label}</span><DownOutlined /></div>)}
@@ -345,7 +345,7 @@ function App() {
       <div className="competitor-list">
         {[
           { market: '1 эшелон', tier: 1, offset: 0 }, { market: 'Пятёрочка', tier: 1, offset: -5 }, { market: 'Магнит', tier: 1, offset: 4 },
-          { market: '2 эшелон', tier: 2, offset: 0 }, { market: 'Озон', tier: 2, offset: -3 }, { market: 'Лавка', tier: 2, offset: 6 },
+          { market: '2 эшелон', tier: 2, offset: 0 }, { market: 'Лавка', tier: 2, offset: 6 },
         ].map(({ market, tier, offset }) => {
           const tierRow = market.includes('эшелон');
           const basePrice = Number(tier === 1 ? competitorPromo?.competitorPrice : competitorPromo?.competitorPrice2) || 260;
@@ -356,7 +356,6 @@ function App() {
           </div>;
         })}
       </div>
-      <Button icon={<ArrowRightOutlined />} onClick={() => notify('Посмотреть историю')}>Посмотреть историю</Button>
     </Drawer>
   </div>;
 }
