@@ -52,11 +52,18 @@ nav button.active::after { content: ''; position: absolute; height: 2px; backgro
 .price-export-modal .ant-modal-header { padding: 16px 24px; border-bottom-color: #f0f0f0; }
 .price-export-modal .ant-modal-title { font-size: 16px; font-weight: 500; line-height: 24px; }
 .price-export-modal .ant-modal-close-x { width: 56px; height: 56px; line-height: 56px; }
-.price-export-modal .ant-modal-body { min-height: 134px; padding: 24px; }
+.price-export-modal .ant-modal-body { padding: 24px; }
 .price-export-modal .ant-modal-footer { padding: 10px 16px; border-top-color: #f0f0f0; }
 .price-export-label { display: block; margin-bottom: 8px; color: rgba(0,0,0,.85); font-size: 14px; line-height: 22px; }
+.price-export-field { padding-bottom: 24px; }
+.price-export-field + .price-export-field { margin-top: 10px; }
+.price-export-alert { margin-bottom: 10px; border-radius: 2px; }
+.price-export-alert.ant-alert-with-description, .price-export-alert { padding: 16px 16px 16px 25px; }
+.price-export-alert .ant-alert-icon { margin-right: 15px; font-size: 22px; }
+.price-export-alert .ant-alert-message { margin-bottom: 0; font-size: 16px; line-height: 24px; }
 .price-export-select { width: 100%; }
 .price-export-select.ant-select-multiple .ant-select-selection-item { max-width: 180px; border-radius: 2px; }
+.price-export-select.ant-select-multiple .ant-select-arrow { display: block; }
 .ant-table { font-size: 14px; }
 .ant-table.ant-table-small .ant-table-thead > tr > th { height: 51px; padding: 8px 9px; background: #fafafa; color: rgba(0,0,0,.45); font-weight: 500; line-height: 18px; }
 .ant-table.ant-table-small .ant-table-thead > tr:first-child > th[rowspan='2'] { height: 102px; }

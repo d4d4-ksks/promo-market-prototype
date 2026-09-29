@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Checkbox, Drawer, Dropdown, Menu, message, Modal, notification, Select, Table, Tag, Tooltip } from 'antd';
+import { Alert, Button, Checkbox, Drawer, Dropdown, Menu, message, Modal, notification, Select, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   AppstoreOutlined, BgColorsOutlined, CalculatorOutlined, CloseOutlined, DownOutlined, EditOutlined,
@@ -33,6 +33,12 @@ const competitorPriceCategories = [
   'Бытовая химия',
   'Гигиена',
   'Детская гигиена и уход',
+];
+
+const competitorPriceCities = [
+  'Анапа', 'Барнаул', 'Белгород', 'Брянск', 'Владивосток', 'Волгоград', 'Воронеж',
+  'Екатеринбург', 'Казань', 'Краснодар', 'Москва', 'Нижний Новгород', 'Новосибирск',
+  'Омск', 'Пермь', 'Ростов-на-Дону', 'Самара', 'Санкт-Петербург', 'Тула', 'Уфа',
 ];
 
 const numberFrom = (value: string | number) => Number(String(value).replace(',', '.').replace(/[^\d.-]/g, ''));
@@ -86,6 +92,8 @@ function App() {
   const [draftPi2Filters, setDraftPi2Filters] = useState<string[]>([]);
   const [priceExportVisible, setPriceExportVisible] = useState(false);
   const [priceExportCategories, setPriceExportCategories] = useState<string[]>([]);
+  const [priceExportCities, setPriceExportCities] = useState<string[]>([]);
+  const [priceExportError, setPriceExportError] = useState(false);
 
   const filteredData = useMemo(() => data.filter(record => {
     const pi1 = piFor(record.salePromo, record.competitorPrice);
@@ -212,14 +220,20 @@ function App() {
   const closePriceExport = () => {
     setPriceExportVisible(false);
     setPriceExportCategories([]);
+    setPriceExportCities([]);
+    setPriceExportError(false);
   };
 
   const downloadCompetitorPrices = () => {
-    if (priceExportCategories.length === 0) return;
+    if (priceExportCategories.length === 0 && priceExportCities.length === 0) {
+      setPriceExportError(true);
+      return;
+    }
+    const filtersCount = priceExportCategories.length + priceExportCities.length;
     closePriceExport();
     notification.success({
       message: 'Цены конкурентов скачаны',
-      description: `Категорий: ${priceExportCategories.length}`,
+      description: `Выбрано значений: ${filtersCount}`,
       placement: 'topRight',
       duration: 4,
     });
@@ -367,22 +381,44 @@ function App() {
       onCancel={closePriceExport}
       footer={[
         <Button key="cancel" onClick={closePriceExport}>Отменить</Button>,
-        <Button key="download" type="primary" disabled={priceExportCategories.length === 0} onClick={downloadCompetitorPrices}>Скачать</Button>,
+        <Button key="download" type="primary" onClick={downloadCompetitorPrices}>Скачать</Button>,
       ]}
     >
-      <label className="price-export-label" htmlFor="price-export-categories">Категория 1</label>
-      <Select
-        id="price-export-categories"
-        mode="multiple"
-        value={priceExportCategories}
-        onChange={setPriceExportCategories}
-        placeholder="Выберите Категорию 1"
-        maxTagCount={3}
-        maxTagTextLength={24}
-        optionFilterProp="label"
-        className="price-export-select"
-        options={competitorPriceCategories.map(category => ({ label: category, value: category }))}
-      />
+      {priceExportError && <Alert className="price-export-alert" type="error" showIcon message="Для скачивания цен конкурентов выберите хотя бы один фильтр" />}
+      <div className="price-export-field">
+        <label className="price-export-label" htmlFor="price-export-categories">Категория 1</label>
+        <Select
+          id="price-export-categories"
+          mode="multiple"
+          value={priceExportCategories}
+          onChange={values => { setPriceExportCategories(values); if (values.length > 0 || priceExportCities.length > 0) setPriceExportError(false); }}
+          placeholder="Выберите Категорию 1"
+          maxTagCount={3}
+          maxTagTextLength={24}
+          optionFilterProp="label"
+          className="price-export-select"
+          showArrow
+          suffixIcon={<DownOutlined />}
+          options={competitorPriceCategories.map(category => ({ label: category, value: category }))}
+        />
+      </div>
+      <div className="price-export-field">
+        <label className="price-export-label" htmlFor="price-export-cities">География</label>
+        <Select
+          id="price-export-cities"
+          mode="multiple"
+          value={priceExportCities}
+          onChange={values => { setPriceExportCities(values); if (values.length > 0 || priceExportCategories.length > 0) setPriceExportError(false); }}
+          placeholder="Выберите город"
+          maxTagCount={3}
+          maxTagTextLength={24}
+          optionFilterProp="label"
+          className="price-export-select"
+          showArrow
+          suffixIcon={<DownOutlined />}
+          options={competitorPriceCities.map(city => ({ label: city, value: city }))}
+        />
+      </div>
     </Modal>
     <Drawer
       width={360}
